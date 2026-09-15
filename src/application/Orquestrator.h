@@ -2,6 +2,7 @@
 #include "core/StateMachine.h"
 #include "core/Events.h"
 #include "agents/HeartBeatMonitor.h"
+#include "agents/ConfigMonitor.h"
 #include "protocol/ProtocolHandler.h"
 #include "communication/ITransport.h"
 
@@ -20,6 +21,7 @@ namespace node
     private:
         node::StateMachine m_stateMachine;
         node::HeartBeatMonitor m_heartBeatMonitor;
+        node::ConfigMonitor m_configMonitor;
         node::ProtocolHandler m_protocol;
         node::ITransport& m_transportSystem;
     };

@@ -13,6 +13,7 @@ const char* toString(node::State s) {
     case node::State::STATE_CFG: return "CFG";
     case node::State::STATE_IDLE: return "IDLE";
     case node::State::STATE_RUN: return "RUN";
+    case node::State::STATE_DISABLED: return "DISABLED";
   }
   return "UNKNOWN";
 }

@@ -7,17 +7,23 @@ namespace node
     {
         EVENT_NONE,
         EVENT_UP_ACK,
+        EVENT_CONFIG_REQUEST,
+        EVENT_CONFIG_TIMEOUT,
+        EVENT_UP_REQUEST,
+        EVENT_UP_TIMEOUT,
         EVENT_RUN_RCV,
         EVENT_IDLE_RCV,
         EVENT_CFG_ACK,
         EVENT_CFG_TIMEOUT,
+        EVENT_DIS_RCV,
         EVENT_CMD_ACK,
         EVENT_CMD_RCV,
         EVENT_CMD_TIMEOUT,
         EVENT_HB_ACK,
         EVENT_HB_REQUEST,
         EVENT_HB_TIMEOUT,
-        EVENT_REBOOT
+        EVENT_REBOOT,
+        EVENT_GET_STATE,
     };
 
 struct Event

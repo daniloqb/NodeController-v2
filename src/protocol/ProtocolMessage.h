@@ -11,6 +11,7 @@ namespace node
         MESSAGE_CFG,
         MESSAGE_RUN,
         MESSAGE_IDLE,
+        MESSAGE_DISABLED,
 
         // ACKs
         MESSAGE_UP_ACK,

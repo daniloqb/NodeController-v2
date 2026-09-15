@@ -127,6 +127,20 @@ namespace node
 
             break;
 
+        case ProtocolMessage::MESSAGE_GET_STATE:
+
+            m_eventEmitter.emitEvent(
+                EventType::EVENT_GET_STATE);
+
+            break;  
+
+        case ProtocolMessage::MESSAGE_DISABLED:
+
+            m_eventEmitter.emitEvent(
+                EventType::EVENT_DIS_RCV);
+
+            break;
+
         case ProtocolMessage::MESSAGE_CMD:
 
             // Vamos tratar o payload posteriormente.
@@ -220,6 +234,15 @@ void ProtocolHandler::sendState(ITransport& transport, State state)
             send(
                 transport,
                 ProtocolMessage::MESSAGE_IDLE
+            );
+
+            break;
+            
+        case State::STATE_DISABLED:
+
+            send(
+                transport,
+                ProtocolMessage::MESSAGE_DISABLED
             );
 
             break;

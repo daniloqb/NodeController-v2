@@ -50,9 +50,15 @@ namespace node
             if (event.type == EventType::EVENT_IDLE_RCV)
             {
                 transitionTo(State::STATE_IDLE);
+            } else {
+                 if (event.type == EventType::EVENT_DIS_RCV)
+            {
+                transitionTo(State::STATE_DISABLED);
+            } 
             }
             break;
         case State::STATE_IDLE:
+        case State::STATE_DISABLED:
             if (event.type == EventType::EVENT_RUN_RCV  )
             {
                 transitionTo(State::STATE_RUN);
@@ -69,6 +75,16 @@ namespace node
             return;
         }
         if (event.type == EventType::EVENT_HB_TIMEOUT)
+        {
+            transitionTo(State::STATE_UP);
+            return;
+        }
+             if (event.type == EventType::EVENT_UP_TIMEOUT)
+        {
+            transitionTo(State::STATE_UP);
+            return;
+        }
+             if (event.type == EventType::EVENT_CFG_TIMEOUT)
         {
             transitionTo(State::STATE_UP);
             return;

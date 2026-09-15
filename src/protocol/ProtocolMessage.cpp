@@ -40,6 +40,12 @@ namespace node
             case ProtocolMessage::MESSAGE_REBOOT:
                 return "REBOOT";
 
+            case ProtocolMessage::MESSAGE_GET_STATE:
+                return "GET_STATE";
+                
+            case ProtocolMessage::MESSAGE_DISABLED:
+                return "DISABLED";
+
 
             case ProtocolMessage::MESSAGE_UNKNOWN:
             default:
@@ -79,6 +85,12 @@ namespace node
 
         if (strcmp(text, "REBOOT") == 0)
             return ProtocolMessage::MESSAGE_REBOOT;
+            
+        if (strcmp(text, "DISABLED") == 0)
+            return ProtocolMessage::MESSAGE_DISABLED;
+
+        if (strncmp(text, "GET_STATE", 9) == 0)
+            return ProtocolMessage::MESSAGE_GET_STATE;
 
 
         //
