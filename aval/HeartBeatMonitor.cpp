@@ -43,7 +43,6 @@ namespace node
         switch (event.type)
         {
         case EventType::EVENT_HB_ACK:
-        case EventType::EVENT_REBOOT:
             m_waitingHeartbeat = false;
             m_lastHeartbeatTime = millis();
             break;

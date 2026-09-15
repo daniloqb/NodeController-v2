@@ -3,10 +3,10 @@
 namespace node
 {
 
-    class HeartBeatManager
+    class HeartBeatMonitor
     {
     public:
-        HeartBeatManager();
+        HeartBeatMonitor() = default;
         void begin();
         void update();
         void handleEvent(const Event &event);
@@ -14,16 +14,12 @@ namespace node
         Event getEvent();
 
     private:
-    void emitEvent(EventType type);
+
 
     private:
-        unsigned long m_lastHeartbeatTime;
-
-        bool m_waitingHeartbeat;
-
-        Event m_event;
-        bool m_hasEvent;
-
+        EventEmitter m_eventEmitter;
+        unsigned long m_lastHeartbeatTime = 0;
+        bool m_waitingHeartbeat = false;
         static constexpr unsigned long HEARTBEAT_INTERVAL = 10000;
     };
 }

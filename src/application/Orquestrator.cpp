@@ -52,15 +52,19 @@ namespace node
 
             m_stateMachine.handleEvent(event);
             m_configMonitor.handleEvent(event);
+            m_heartBeatMonitor.handleEvent(event);
             break;
         case EventType::EVENT_RUN_RCV:
         case EventType::EVENT_IDLE_RCV:
         case EventType::EVENT_DIS_RCV:
-        case EventType::EVENT_UP_TIMEOUT:
             m_stateMachine.handleEvent(event);
             break;
-        case EventType::EVENT_CONFIG_TIMEOUT:
-            m_configMonitor.startConfig();
+        case EventType::EVENT_UP_TIMEOUT:
+            m_protocol.sendState(m_transportSystem, m_stateMachine.getState());
+            m_stateMachine.handleEvent(event);
+            break;
+        case EventType::EVENT_CFG_TIMEOUT:
+            m_configMonitor.restartHandshake();
             m_stateMachine.handleEvent(event);
             break;
 
@@ -69,7 +73,7 @@ namespace node
             break;
 
         case EventType::EVENT_UP_REQUEST:
-        case EventType::EVENT_CONFIG_REQUEST:
+        case EventType::EVENT_CFG_REQUEST:
         case EventType::EVENT_GET_STATE:
             m_protocol.sendState(m_transportSystem, m_stateMachine.getState());
             break;

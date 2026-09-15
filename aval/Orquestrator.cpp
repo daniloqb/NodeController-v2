@@ -5,17 +5,18 @@ namespace node
 
     void Orquestrator::begin()
     {
-        m_transport.begin();
+        m_transportSystem.begin();
         m_protocol.begin();
         m_stateMachine.begin();
-        m_heartBeatManager.begin();
+        m_heartBeatMonitor.begin();
+        m_configMonitor.begin();
     }
 
     void Orquestrator::update()
     {
 
-        m_transport.update();
-        m_protocol.update(m_transport);
+        m_transportSystem.update();
+        m_protocol.update(m_transportSystem);
 
         while (m_protocol.hasEvent())
         {
@@ -24,11 +25,18 @@ namespace node
         }
 
         m_stateMachine.update();
-        Event event;
-        m_heartBeatManager.update();
-        while (m_heartBeatManager.hasEvent())
+
+        m_heartBeatMonitor.update();
+        while (m_heartBeatMonitor.hasEvent())
         {
-            Event event = m_heartBeatManager.getEvent();
+            Event event = m_heartBeatMonitor.getEvent();
+            handleEvent(event);
+        }
+
+        m_configMonitor.update();
+        while (m_configMonitor.hasEvent())
+        {
+            Event event = m_configMonitor.getEvent();
             handleEvent(event);
         }
     }
@@ -38,26 +46,44 @@ namespace node
 
         switch (event.type)
         {
-        case EventType::EVENT_ACK_UP:
-        case EventType::EVENT_ACK_CFG:
-        case EventType::EVENT_RUN_RCV:
-        case EventType::EVENT_IDLE_RCV:
+        case EventType::EVENT_UP_ACK:
+        case EventType::EVENT_CFG_ACK:
         case EventType::EVENT_REBOOT:
 
+            m_stateMachine.handleEvent(event);
+            m_configMonitor.handleEvent(event);
+            break;
+        case EventType::EVENT_RUN_RCV:
+        case EventType::EVENT_IDLE_RCV:
+        case EventType::EVENT_DIS_RCV:
+        case EventType::EVENT_UP_TIMEOUT:
+            m_stateMachine.handleEvent(event);
+            break;
+        case EventType::EVENT_CONFIG_TIMEOUT:
+            m_configMonitor.startConfig();
             m_stateMachine.handleEvent(event);
             break;
 
         case EventType::EVENT_HB_ACK:
-            m_heartBeatManager.handleEvent(event);
+            m_heartBeatMonitor.handleEvent(event);
+            break;
+
+        case EventType::EVENT_UP_REQUEST:
+        case EventType::EVENT_CONFIG_REQUEST:
+        case EventType::EVENT_GET_STATE:
+            m_protocol.sendState(m_transportSystem, m_stateMachine.getState());
             break;
 
         case EventType::EVENT_HB_REQUEST:
-            m_protocol.sendHeartbeat(m_transport);
+            m_protocol.sendHeartbeat(m_transportSystem);
             break;
 
         case EventType::EVENT_HB_TIMEOUT:
             m_stateMachine.handleEvent(event);
+            m_configMonitor.handleEvent(event);
 
+            break;
+        default:
             break;
         }
     }

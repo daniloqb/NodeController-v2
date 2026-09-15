@@ -1,5 +1,6 @@
 #pragma once
 #include <stdint.h>
+#include <stddef.h>
 
 namespace node
 {
@@ -7,13 +8,13 @@ namespace node
     {
         EVENT_NONE,
         EVENT_UP_ACK,
-        EVENT_CONFIG_REQUEST,
-        EVENT_CONFIG_TIMEOUT,
+
         EVENT_UP_REQUEST,
         EVENT_UP_TIMEOUT,
         EVENT_RUN_RCV,
         EVENT_IDLE_RCV,
         EVENT_CFG_ACK,
+        EVENT_CFG_REQUEST,
         EVENT_CFG_TIMEOUT,
         EVENT_DIS_RCV,
         EVENT_CMD_ACK,
@@ -26,15 +27,23 @@ namespace node
         EVENT_GET_STATE,
     };
 
-struct Event
-{
-    EventType type = EventType::EVENT_NONE;
-    uint8_t nodeId = 0;
-    int data = 0;
-   
-};
+    struct Command
+    {
+        static constexpr size_t PATH_SIZE = 32;
+        static constexpr size_t VALUE_SIZE = 32;
 
-class EventEmitter{
+        char path[PATH_SIZE] = {};
+        char value[VALUE_SIZE] = {};
+    };
+
+    struct Event
+    {
+        EventType type = EventType::EVENT_NONE;
+        Command command = {};
+    };
+
+    class EventEmitter
+    {
     public:
         EventEmitter() = default;
 
@@ -64,6 +73,6 @@ class EventEmitter{
     private:
         Event m_event = {};
         bool m_hasEvent = false;
-};      
+    };
 
 }

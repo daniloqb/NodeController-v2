@@ -17,8 +17,8 @@ namespace node
         bool hasEvent() const;
         Event getEvent();
         bool isRunning() const;
-        void restartHandshake();
-        void stopHandshake();
+        void startConfig();
+        void stopConfig();
 
     private:
 

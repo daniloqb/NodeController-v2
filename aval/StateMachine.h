@@ -4,33 +4,26 @@
 namespace node{
 
        enum class State{
-        UP,
-        CFG,
-        RUN,
-        IDLE,
+        STATE_BOOT,
+        STATE_UP,
+        STATE_CFG,
+        STATE_RUN,
+        STATE_IDLE,
+        STATE_DISABLED,
     };
-
-
 
     class StateMachine{
         public:
-            StateMachine();
+            StateMachine() = default;
             void begin();
             void update();
 
             State getState() const;
 
-            bool isUp() const;
-            bool isCfg() const;
-            bool isRunning() const;
-            bool isIdle() const;
-
-            void clearStateChanged();
             void handleEvent(const Event& event);
 
         private:
-            State m_state;
-            bool m_stateChanged;
+            State m_state = State::STATE_BOOT;
 
             void transitionTo(State newState);
     };

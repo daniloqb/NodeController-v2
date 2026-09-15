@@ -89,7 +89,7 @@ namespace node
         if (strcmp(text, "DISABLED") == 0)
             return ProtocolMessage::MESSAGE_DISABLED;
 
-        if (strcmp(text, "GET_STATE") == 0)
+        if (strncmp(text, "GET_STATE", 9) == 0)
             return ProtocolMessage::MESSAGE_GET_STATE;
 
 

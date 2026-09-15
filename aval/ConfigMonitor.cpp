@@ -10,7 +10,6 @@ namespace node
         m_waitingConfig = false;
         m_eventEmitter = EventEmitter();
         m_state = State::STATE_UP;
-        m_run = true;
     }
 
     bool ConfigMonitor::isRunning() const
@@ -18,7 +17,7 @@ namespace node
         return m_run;
     }
 
-    void ConfigMonitor::restartHandshake()
+    void ConfigMonitor::startConfig()
     {
         m_run = true;
 
@@ -27,10 +26,9 @@ namespace node
         m_state = State::STATE_UP;
     }
 
-    void ConfigMonitor::stopHandshake()
+    void ConfigMonitor::stopConfig()
     {
         m_run = false;
-        m_state = State::STATE_UP;
     }
 
     void ConfigMonitor::update()
@@ -57,7 +55,7 @@ namespace node
                     m_eventEmitter.emitEvent(EventType::EVENT_UP_TIMEOUT);
                     break;
                 case State::STATE_CFG:
-                    m_eventEmitter.emitEvent(EventType::EVENT_CFG_TIMEOUT);
+                    m_eventEmitter.emitEvent(EventType::EVENT_CONFIG_TIMEOUT);
                     break;
                 default:
                     break;
@@ -74,7 +72,7 @@ namespace node
                 m_eventEmitter.emitEvent(EventType::EVENT_UP_REQUEST);
                 break;
             case State::STATE_CFG:
-                m_eventEmitter.emitEvent(EventType::EVENT_CFG_REQUEST);
+                m_eventEmitter.emitEvent(EventType::EVENT_CONFIG_REQUEST);
                 break;
             default:
                 break;
@@ -89,7 +87,7 @@ namespace node
         case EventType::EVENT_CFG_ACK:
             m_waitingConfig = false;
             m_lastConfigTime = 0;
-            stopHandshake();
+            stopConfig();
             break;
 
         case EventType::EVENT_UP_ACK:
@@ -100,7 +98,7 @@ namespace node
 
         case EventType::EVENT_REBOOT:
         case EventType::EVENT_HB_TIMEOUT:
-            restartHandshake();
+            startConfig();
             break;
 
         default:

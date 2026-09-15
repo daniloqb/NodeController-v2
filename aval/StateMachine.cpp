@@ -3,15 +3,9 @@
 namespace node
 {
 
-    StateMachine::StateMachine() : m_state(State::UP),
-                                   m_stateChanged(false)
+     void StateMachine::begin()
     {
-    }
-
-    void StateMachine::begin()
-    {
-        m_state = State::UP;
-        m_stateChanged = false;
+        m_state = State::STATE_UP;
     }
 
     void StateMachine::update()
@@ -27,7 +21,6 @@ namespace node
         if (m_state != newState)
         {
             m_state = newState;
-            m_stateChanged = true;
         }
     }
 
@@ -36,54 +29,39 @@ namespace node
         return m_state;
     }
 
-    void StateMachine::clearStateChanged()
-    {
-        m_stateChanged = false;
-    }
-
-    bool StateMachine::isUp() const
-    {
-        return m_state == State::UP;
-    }
-    bool StateMachine::isCfg() const
-    {
-        return m_state == State::CFG;
-    }
-    bool StateMachine::isRunning() const
-    {
-        return m_state == State::RUN;
-    }
-    bool StateMachine::isIdle() const
-    {
-        return m_state == State::IDLE;
-    }
-
+    
     void node::StateMachine::handleEvent(const Event &event)
     {
         switch (m_state)
         {
-        case State::UP:
-            if (event.type == EventType::EVENT_ACK_UP)
+        case State::STATE_UP:
+            if (event.type == EventType::EVENT_UP_ACK)
             {
-                transitionTo(State::CFG);
+                transitionTo(State::STATE_CFG);
             }
             break;
-        case State::CFG:
-            if (event.type == EventType::EVENT_ACK_CFG)
+        case State::STATE_CFG:
+            if (event.type == EventType::EVENT_CFG_ACK)
             {
-                transitionTo(State::RUN);
+                transitionTo(State::STATE_RUN);
             }
             break;
-        case State::RUN:
+        case State::STATE_RUN:
             if (event.type == EventType::EVENT_IDLE_RCV)
             {
-                transitionTo(State::IDLE);
+                transitionTo(State::STATE_IDLE);
+            } else {
+                 if (event.type == EventType::EVENT_DIS_RCV)
+            {
+                transitionTo(State::STATE_DISABLED);
+            } 
             }
             break;
-        case State::IDLE:
+        case State::STATE_IDLE:
+        case State::STATE_DISABLED:
             if (event.type == EventType::EVENT_RUN_RCV  )
             {
-                transitionTo(State::RUN);
+                transitionTo(State::STATE_RUN);
             }
             break;
 
@@ -93,12 +71,22 @@ namespace node
 
         if (event.type == EventType::EVENT_REBOOT)
         {
-            transitionTo(State::UP);
+            transitionTo(State::STATE_UP);
             return;
         }
         if (event.type == EventType::EVENT_HB_TIMEOUT)
         {
-            transitionTo(State::UP);
+            transitionTo(State::STATE_UP);
+            return;
+        }
+             if (event.type == EventType::EVENT_UP_TIMEOUT)
+        {
+            transitionTo(State::STATE_UP);
+            return;
+        }
+             if (event.type == EventType::EVENT_CFG_TIMEOUT)
+        {
+            transitionTo(State::STATE_UP);
             return;
         }
     }

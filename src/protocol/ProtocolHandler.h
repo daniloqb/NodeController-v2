@@ -21,7 +21,9 @@ namespace node
     void sendHeartbeat(ITransport &transport);
     void sendState(ITransport &transport, State state);
 
-  private : void processMessage();
+  private : 
+    void processMessage();
+    void processCommand();
     void clearBuffer();
     void send(ITransport &transport, ProtocolMessage message);
 

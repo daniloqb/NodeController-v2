@@ -1,9 +1,10 @@
 #pragma once
 #include "core/StateMachine.h"
 #include "core/Events.h"
-#include "communication/HeartBeatManager.h"
+#include "agents/HeartBeatMonitor.h"
+#include "agents/ConfigMonitor.h"
 #include "protocol/ProtocolHandler.h"
-#include "protocol/SerialTransport.h"
+#include "communication/ITransport.h"
 
 
 namespace node
@@ -11,16 +12,18 @@ namespace node
     class Orquestrator
     {
     public:
-        Orquestrator(ITransport& transport): m_transport(transport) {};
+        Orquestrator(ITransport& transport): m_transportSystem(transport) {};
         void begin();
         void update();
         void handleEvent(const Event& event);  
+        State getState() const { return m_stateMachine.getState(); }
 
     private:
         node::StateMachine m_stateMachine;
-        node::HeartBeatManager m_heartBeatManager;
+        node::HeartBeatMonitor m_heartBeatMonitor;
+        node::ConfigMonitor m_configMonitor;
         node::ProtocolHandler m_protocol;
-        node::ITransport& m_transport;
+        node::ITransport& m_transportSystem;
     };
 
 }
