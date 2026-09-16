@@ -21,6 +21,10 @@ const char* toString(node::State s) {
 void setup() {
 
   orquestrator.begin();
+
+  pinMode(LED_BUILTIN, OUTPUT);
+  digitalWrite(LED_BUILTIN, HIGH);
+  Serial.println("Setup complete");
 }
 
 void loop() {

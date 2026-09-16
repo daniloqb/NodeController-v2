@@ -24,8 +24,9 @@ namespace node
 
         // Comandos
         MESSAGE_CMD,
+        MESSAGE_CMD_ERROR,
         MESSAGE_REBOOT,
-        MESSAGE_GET_STATE
+        MESSAGE_GET_STATE,
     };
 
     const char* protocolMessageToString(ProtocolMessage message);

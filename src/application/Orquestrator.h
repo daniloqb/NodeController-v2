@@ -5,6 +5,7 @@
 #include "agents/ConfigMonitor.h"
 #include "protocol/ProtocolHandler.h"
 #include "communication/ITransport.h"
+#include "controller/NodeController.h"
 
 
 namespace node
@@ -24,6 +25,7 @@ namespace node
         node::ConfigMonitor m_configMonitor;
         node::ProtocolHandler m_protocol;
         node::ITransport& m_transportSystem;
+        node::NodeController m_nodeController;
     };
 
 }

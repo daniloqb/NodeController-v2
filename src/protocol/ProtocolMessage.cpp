@@ -37,6 +37,9 @@ namespace node
             case ProtocolMessage::MESSAGE_CMD:
                 return "CMD";
 
+            case ProtocolMessage::MESSAGE_CMD_ERROR:
+                return "CMD_ERROR";
+
             case ProtocolMessage::MESSAGE_REBOOT:
                 return "REBOOT";
 
@@ -82,6 +85,12 @@ namespace node
 
         if (strcmp(text, "HB") == 0)
             return ProtocolMessage::MESSAGE_HB;
+
+        if (strcmp(text, "CMD_ERROR") == 0)
+            return ProtocolMessage::MESSAGE_CMD_ERROR;
+
+        if (strcmp(text, "CMD") == 0)
+            return ProtocolMessage::MESSAGE_CMD;
 
         if (strcmp(text, "REBOOT") == 0)
             return ProtocolMessage::MESSAGE_REBOOT;

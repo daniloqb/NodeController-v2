@@ -143,10 +143,7 @@ namespace node
 
         case ProtocolMessage::MESSAGE_CMD:
 
-            // Vamos tratar o payload posteriormente.
-            //
-            // Ex:
-            // CMD:3:MOVE:120
+            processCommand(m_buffer + 4);
 
             break;
 
@@ -160,6 +157,47 @@ namespace node
             break;
         }
     }
+    void ProtocolHandler::processCommand(const char *text )
+    {
+        const char * separator = strchr(text, ':');
+
+        if (separator == nullptr){
+            m_eventEmitter.emitEvent(
+                EventType::EVENT_CMD_ERROR);
+            return;     
+        }
+            
+        Command command = {};
+        
+        size_t pathLength = static_cast<size_t>(separator - text);
+       
+        if (pathLength >= Command::PATH_SIZE)
+        {
+            m_eventEmitter.emitEvent(
+                EventType::EVENT_CMD_ERROR);
+            return;
+        }
+
+        strncpy(command.path, text, pathLength);
+        command.path[pathLength] = '\0';
+
+        const char *value = separator + 1;
+        size_t valueLength = strlen(value);
+        if (valueLength >= Command::VALUE_SIZE)
+        {
+            m_eventEmitter.emitEvent(
+                EventType::EVENT_CMD_ERROR);
+            return;
+        }
+
+        strncpy(command.value, value, valueLength);
+        command.value[valueLength] = '\0';
+
+        Event event = {};
+        event.type = EventType::EVENT_CMD_RCV;
+        event.command = command;
+        m_eventEmitter.emitEvent(event);
+    }
 
     void ProtocolHandler::send(ITransport &transport, ProtocolMessage message)
     {
@@ -169,6 +207,19 @@ namespace node
         transport.write(
             reinterpret_cast<const uint8_t *>(text),
             strlen(text));
+
+        const uint8_t newline = '\n';
+
+        transport.write(
+            &newline,
+            1);
+    }
+
+    void ProtocolHandler::send(ITransport &transport, const char *message)
+    {
+        transport.write(
+            reinterpret_cast<const uint8_t *>(message),
+            strlen(message));
 
         const uint8_t newline = '\n';
 
@@ -249,4 +300,14 @@ void ProtocolHandler::sendState(ITransport& transport, State state)
     }
 }
 
+void ProtocolHandler::sendCommand(ITransport &transport, Command command)
+{
+    char message[256] = {};
+
+    strncpy(message, command.path, Command::PATH_SIZE);
+    strncat(message, "=", 1);
+    strncat(message, command.value, Command::VALUE_SIZE);
+
+    send(transport, message);   
+}
 }

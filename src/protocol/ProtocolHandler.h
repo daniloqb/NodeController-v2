@@ -20,12 +20,14 @@ namespace node
     Event getEvent();
     void sendHeartbeat(ITransport &transport);
     void sendState(ITransport &transport, State state);
-
+    void sendCommand(ITransport &transport, Command command);
+    void send(ITransport &transport, ProtocolMessage message);
   private : 
     void processMessage();
-    void processCommand();
+    void processCommand(const char *text);
     void clearBuffer();
-    void send(ITransport &transport, ProtocolMessage message);
+   
+    void send(ITransport &transport, const char *message);
 
   private:
     static constexpr size_t BUFFER_SIZE = 256;

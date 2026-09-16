@@ -1,25 +1,23 @@
 #pragma once
+
 #include "core/Events.h"
+#include "../nodes/LedNode.h"
+
 namespace node
 {
-
-    class HeartBeatMonitor
+    class NodeController
     {
     public:
-        HeartBeatMonitor() = default;
+        NodeController() = default;
         void begin();
         void update();
         void handleEvent(const Event &event);
+
         bool hasEvent() const;
         Event getEvent();
-
-    private:
-
-
     private:
         EventEmitter m_eventEmitter;
-        unsigned long m_lastHeartbeatTime = 0;
-        bool m_waitingHeartbeat = false;
-        static constexpr unsigned long HEARTBEAT_INTERVAL = 60000;
+        void handleCommand(const Command &command);
+        LedNode m_ledNode;
     };
 }

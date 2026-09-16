@@ -25,6 +25,7 @@ namespace node
         EVENT_HB_TIMEOUT,
         EVENT_REBOOT,
         EVENT_GET_STATE,
+        EVENT_CMD_ERROR,
     };
 
     struct Command
@@ -54,6 +55,16 @@ namespace node
                 return;
 
             m_event.type = type;
+            m_hasEvent = true;
+        }
+
+        void emitEvent(const Event& event)
+        {
+            // Evita sobrescrever um evento ainda não consumido.
+            if (m_hasEvent)
+                return;
+
+            m_event = event;
             m_hasEvent = true;
         }
 

@@ -10,6 +10,7 @@ namespace node
         m_stateMachine.begin();
         m_heartBeatMonitor.begin();
         m_configMonitor.begin();
+        m_nodeController.begin();
     }
 
     void Orquestrator::update()
@@ -37,6 +38,13 @@ namespace node
         while (m_configMonitor.hasEvent())
         {
             Event event = m_configMonitor.getEvent();
+            handleEvent(event);
+        }
+
+        m_nodeController.update();
+        while (m_nodeController.hasEvent())
+        {
+            Event event = m_nodeController.getEvent();
             handleEvent(event);
         }
     }
@@ -86,6 +94,15 @@ namespace node
             m_stateMachine.handleEvent(event);
             m_configMonitor.handleEvent(event);
 
+            break;
+
+        case EventType::EVENT_CMD_RCV:
+            m_nodeController.handleEvent(event);
+            break;
+
+        case EventType::EVENT_CMD_ERROR:
+            // m_nodeController.handleEvent(event);
+    
             break;
         default:
             break;
