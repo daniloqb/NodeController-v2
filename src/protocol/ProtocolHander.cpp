@@ -183,16 +183,17 @@ namespace node
 
         const char *value = separator + 1;
         size_t valueLength = strlen(value);
-        if (valueLength >= Command::VALUE_SIZE)
+        if (valueLength >= Command::PAYLOAD_SIZE)
         {
             m_eventEmitter.emitEvent(
                 EventType::EVENT_CMD_ERROR);
             return;
         }
 
-        strncpy(command.value, value, valueLength);
-        command.value[valueLength] = '\0';
+        strncpy(command.payload, value, valueLength);
+        command.payload[valueLength] = '\0';
 
+        command.hasPayload = true;
         Event event = {};
         event.type = EventType::EVENT_CMD_RCV;
         event.command = command;
@@ -306,7 +307,7 @@ void ProtocolHandler::sendCommand(ITransport &transport, Command command)
 
     strncpy(message, command.path, Command::PATH_SIZE);
     strncat(message, "=", 1);
-    strncat(message, command.value, Command::VALUE_SIZE);
+    strncat(message, command.payload, Command::PAYLOAD_SIZE);
 
     send(transport, message);   
 }

@@ -11,7 +11,7 @@ namespace node {
 
         void begin() override
         {
-            m_serial.begin(115200);
+            m_serial.begin(9600);
         }
 
         void update() override

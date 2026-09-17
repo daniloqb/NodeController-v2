@@ -1,28 +1,64 @@
-#include "LedNode.h"
+#include "nodes/LedNode.h"
+#include "core/Events.h"
 #include <Arduino.h>
 
 namespace node
 {
+    node::LedNode::LedNode(uint8_t pin)
+    {
+        m_pin = pin;
+    }
+
+    void node::LedNode::SetStatus(const bool status)
+    {
+        m_status = status;
+    }
     void node::LedNode::begin()
     {
-        pinMode(LED_BUILTIN, OUTPUT);
-        m_status = false;
+        pinMode(m_pin, OUTPUT);
+        SetStatus(false);
     }
 
     void node::LedNode::update()
     {
-        digitalWrite(LED_BUILTIN, m_status);
+        digitalWrite(m_pin, m_status);
     }
 
-    void node::LedNode::setStatus(bool status)
+    void node::LedNode::reset()
     {
-        m_status = status;
-        digitalWrite(LED_BUILTIN, m_status);
+        SetStatus(false);
     }
 
-    bool node::LedNode::getStatus() const
+    bool node::LedNode::accepts(const Command &command) const
     {
-        return m_status;
+        return strncmp(command.path, "/led/", strlen("/led/")) == 0;
+    }
+
+    bool node::LedNode::handleCommand(const Command &command)
+    {
+
+        if (strcmp(command.path, "/led/status") == 0)
+        {
+            if (command.hasPayload)
+            {
+                if (strcmp(command.payload, "true") == 0)
+                {
+                    SetStatus(true);
+                    return true;
+                }
+                else if (strcmp(command.payload, "false") == 0)
+                {
+                    SetStatus(false);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    const char *node::LedNode::getId() const
+    {
+        return "led";
     }
 
 }

@@ -1,7 +1,8 @@
 #pragma once
 
 #include "core/Events.h"
-#include "../nodes/LedNode.h"
+#include "core/Commands.h"
+#include "nodes/INode.h"
 
 namespace node
 {
@@ -15,9 +16,15 @@ namespace node
 
         bool hasEvent() const;
         Event getEvent();
+
+        void addNode(INode& node);
     private:
         EventEmitter m_eventEmitter;
         void handleCommand(const Command &command);
-        LedNode m_ledNode;
+        
+    private:
+        static constexpr size_t MAX_NODES = 8;
+        INode* m_nodes[MAX_NODES] = {};
+        size_t m_nodeCount = 0;
     };
 }

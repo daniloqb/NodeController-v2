@@ -1,6 +1,7 @@
 #pragma once
 #include <stdint.h>
 #include <stddef.h>
+#include "core/Commands.h"
 
 namespace node
 {
@@ -28,14 +29,6 @@ namespace node
         EVENT_CMD_ERROR,
     };
 
-    struct Command
-    {
-        static constexpr size_t PATH_SIZE = 32;
-        static constexpr size_t VALUE_SIZE = 32;
-
-        char path[PATH_SIZE] = {};
-        char value[VALUE_SIZE] = {};
-    };
 
     struct Event
     {
@@ -58,7 +51,7 @@ namespace node
             m_hasEvent = true;
         }
 
-        void emitEvent(const Event& event)
+        void emitEvent(const Event &event)
         {
             // Evita sobrescrever um evento ainda não consumido.
             if (m_hasEvent)
