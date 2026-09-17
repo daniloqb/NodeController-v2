@@ -17,7 +17,8 @@ namespace node
         const char* getId() const override;
         bool accepts(const Command &command) const override;
 
-        bool handleCommand(const Command &command) override;
+        CommandResult handleCommand(const Command &command) override;
+        bool pollEvent(NodeEvent& event) override;
 
     private:
         bool m_status;

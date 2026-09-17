@@ -1,5 +1,6 @@
 #pragma once
-#include "core/Events.h"
+#include "core/NodeEvent.h"
+#include "core/Commands.h"
 
 namespace node
 {
@@ -15,7 +16,8 @@ public:
     virtual const char* getId() const = 0;
     virtual bool accepts(const Command& command) const = 0;
 
-    virtual bool handleCommand(const Command& command) = 0;
+    virtual CommandResult handleCommand(const Command& command) = 0;
 
+    virtual bool pollEvent(NodeEvent& event) = 0;
 };
 }

@@ -34,25 +34,53 @@ namespace node
         return strncmp(command.path, "/led/", strlen("/led/")) == 0;
     }
 
-    bool node::LedNode::handleCommand(const Command &command)
+    CommandResult node::LedNode::handleCommand(const Command &command)
     {
+
+        CommandResult result = {};
+
+        // Handle the "/led/status" command
+        if (strcmp(command.path, "/led/status") != 0)
+        {
+            result.type = CommandResultType::ERROR;          // Assuming CommandResult has a type field and CommandResultType::ERROR exists
+            result.error = CommandError::PROPERTY_NOT_FOUND; // Assuming CommandError::PROPERTY_NOT_FOUND exists
+            return result;
+        }
 
         if (strcmp(command.path, "/led/status") == 0)
         {
-            if (command.hasPayload)
+            if (command.hasPayload) //SET
             {
                 if (strcmp(command.payload, "true") == 0)
                 {
                     SetStatus(true);
-                    return true;
+                    result.type = CommandResultType::ACK;
+                    return result;
                 }
                 else if (strcmp(command.payload, "false") == 0)
                 {
                     SetStatus(false);
-                    return true;
+                    result.type = CommandResultType::ACK;
+                    return result;
                 }
             }
+            if (!command.hasPayload) //GET
+            {
+                result.type = CommandResultType::RESPONSE;
+                strcpy(result.payload, m_status ? "true" : "false");
+                result.hasPayload = true;
+                return result;
+            }
         }
+
+        result.type = CommandResultType::ERROR;
+        result.error = CommandError::INVALID_PAYLOAD;
+
+        return result;
+    }
+
+    bool node::LedNode::pollEvent(NodeEvent& event)
+    {
         return false;
     }
 

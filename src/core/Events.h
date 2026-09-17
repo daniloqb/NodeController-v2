@@ -5,6 +5,8 @@
 
 namespace node
 {
+
+      
     enum class EventType
     {
         EVENT_NONE,
@@ -28,7 +30,6 @@ namespace node
         EVENT_GET_STATE,
         EVENT_CMD_ERROR,
     };
-
 
     struct Event
     {
