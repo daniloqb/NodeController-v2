@@ -29,6 +29,7 @@ namespace node
         EVENT_REBOOT,
         EVENT_GET_STATE,
         EVENT_CMD_ERROR,
+        EVENT_CMD_PARSE_ERROR,
     };
 
     struct Event

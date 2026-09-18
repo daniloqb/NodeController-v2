@@ -12,19 +12,22 @@ namespace node
         NodeController() = default;
         void begin();
         void update();
-        void handleEvent(const Event &event);
+     
+        CommandResult handleCommand(const Command &command);
 
+        void handleEvent(const Event &event);
+        bool pollEvent(NodeEvent& node);
         bool hasEvent() const;
         Event getEvent();
 
         void addNode(INode& node);
     private:
         EventEmitter m_eventEmitter;
-        void handleCommand(const Command &command);
         
     private:
-        static constexpr size_t MAX_NODES = 8;
+        static constexpr size_t MAX_NODES = 2;
         INode* m_nodes[MAX_NODES] = {};
         size_t m_nodeCount = 0;
+        size_t m_nextPollIndex = 0;
     };
 }

@@ -87,15 +87,22 @@ namespace node
         switch (event.type)
         {
         case EventType::EVENT_CFG_ACK:
-            m_waitingConfig = false;
-            m_lastConfigTime = 0;
-            stopHandshake();
+            if (m_state == State::STATE_CFG)
+            {
+                m_waitingConfig = false;
+                m_lastConfigTime = 0;
+                stopHandshake();
+            }
             break;
 
         case EventType::EVENT_UP_ACK:
-            m_waitingConfig = false;
-            m_lastConfigTime = millis();
-            m_state = State::STATE_CFG;
+
+            if (m_state == State::STATE_UP)
+            {
+                m_waitingConfig = false;
+                m_lastConfigTime = millis();
+                m_state = State::STATE_CFG;
+            }
             break;
 
         case EventType::EVENT_REBOOT:

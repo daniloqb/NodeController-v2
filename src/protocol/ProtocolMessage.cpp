@@ -47,7 +47,7 @@ namespace node
                 return "GET_STATE";
                 
             case ProtocolMessage::MESSAGE_DISABLED:
-                return "DISABLED";
+                return "DIS";
 
 
             case ProtocolMessage::MESSAGE_UNKNOWN:
@@ -95,7 +95,7 @@ namespace node
         if (strcmp(text, "REBOOT") == 0)
             return ProtocolMessage::MESSAGE_REBOOT;
             
-        if (strcmp(text, "DISABLED") == 0)
+        if (strcmp(text, "DIS") == 0)
             return ProtocolMessage::MESSAGE_DISABLED;
 
         if (strcmp(text, "GET_STATE") == 0)

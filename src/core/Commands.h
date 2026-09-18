@@ -3,8 +3,8 @@
 #include <stdint.h>
 namespace node
 {
- static constexpr size_t COMMAND_PATH_SIZE = 48;
- static constexpr size_t COMMAND_PAYLOAD_SIZE = 96;
+ static constexpr size_t COMMAND_PATH_SIZE = 20;
+ static constexpr size_t COMMAND_PAYLOAD_SIZE = 20;
 
 
     struct Command
@@ -12,6 +12,8 @@ namespace node
        
         char path[COMMAND_PATH_SIZE] = {};
         char payload[COMMAND_PAYLOAD_SIZE] = {};
+        // char *path = nullptr;
+        // char *payload = nullptr;
         bool hasPayload = false;
     };
 
@@ -43,5 +45,5 @@ namespace node
         bool hasPayload = false;
     };
 
-    const char* CommandErrorToString(CommandError error);
+    const char* commandErrorToString(CommandError error);
 }

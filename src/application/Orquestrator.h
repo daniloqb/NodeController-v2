@@ -17,6 +17,7 @@ namespace node
         void begin();
         void update();
         void handleEvent(const Event& event);  
+        void handleCommand(const Command& command);
         State getState() const { return m_stateMachine.getState(); }
 
     private:

@@ -3,7 +3,7 @@
 namespace node
 {
 
-const char *CommandErrorToString(CommandError error)
+const char *commandErrorToString(CommandError error)
 {
     switch (error)
     {

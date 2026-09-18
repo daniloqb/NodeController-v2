@@ -6,8 +6,8 @@
 namespace node
 {
 
-    static constexpr size_t NODE_EVENT_PATH_SIZE = 48;
-    static constexpr size_t NODE_EVENT_PAYLOAD_SIZE = 96;
+    static constexpr size_t NODE_EVENT_PATH_SIZE = 20;
+    static constexpr size_t NODE_EVENT_PAYLOAD_SIZE = 20;
 
     enum class NodeEventType : uint8_t
     {
@@ -32,4 +32,6 @@ namespace node
         char payload[NODE_EVENT_PAYLOAD_SIZE] = {};
         bool hasPayload = false;
     };
+
+    const char* nodeErrorToString(NodeError error);
 }

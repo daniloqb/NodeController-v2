@@ -39,6 +39,7 @@ namespace node
 
         CommandResult result = {};
 
+
         // Handle the "/led/status" command
         if (strcmp(command.path, "/led/status") != 0)
         {
@@ -46,6 +47,8 @@ namespace node
             result.error = CommandError::PROPERTY_NOT_FOUND; // Assuming CommandError::PROPERTY_NOT_FOUND exists
             return result;
         }
+
+
 
         if (strcmp(command.path, "/led/status") == 0)
         {

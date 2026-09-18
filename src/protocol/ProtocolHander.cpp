@@ -1,6 +1,7 @@
 #include "protocol/ProtocolHandler.h"
 #include <string.h>
 #include <stdlib.h>
+#include <Arduino.h>
 
 namespace node
 {
@@ -132,7 +133,7 @@ namespace node
             m_eventEmitter.emitEvent(
                 EventType::EVENT_GET_STATE);
 
-            break;  
+            break;
 
         case ProtocolMessage::MESSAGE_DISABLED:
 
@@ -143,8 +144,11 @@ namespace node
 
         case ProtocolMessage::MESSAGE_CMD:
 
-            processCommand(m_buffer + 4);
-
+            if (!parseCommand(m_buffer))
+            {
+                m_eventEmitter.emitEvent(
+                    EventType::EVENT_CMD_PARSE_ERROR);
+            }
             break;
 
         case ProtocolMessage::MESSAGE_UNKNOWN:
@@ -157,47 +161,94 @@ namespace node
             break;
         }
     }
-    void ProtocolHandler::processCommand(const char *text )
+
+    bool ProtocolHandler::parseCommand(
+        const char *text)
     {
-        const char * separator = strchr(text, ':');
+        // Esperado:
+        //
+        // CMD:/led/status
+        //
+        // ou:
+        //
+        // CMD:/led/status:true
 
-        if (separator == nullptr){
-            m_eventEmitter.emitEvent(
-                EventType::EVENT_CMD_ERROR);
-            return;     
-        }
-            
-        Command command = {};
-        
-        size_t pathLength = static_cast<size_t>(separator - text);
-       
-        if (pathLength >= Command::PATH_SIZE)
+        const char *body = text + 4;
+
+        if (*body != '/')
+            return false;
+
+        Command command{};
+
+        const char *separator =
+            strchr(body, ':');
+
+        // ------------------------
+        // GET
+        // ------------------------
+
+        if (separator == nullptr)
         {
-            m_eventEmitter.emitEvent(
-                EventType::EVENT_CMD_ERROR);
-            return;
+            size_t pathLength =
+                strlen(body);
+
+            if (pathLength >=
+                COMMAND_PATH_SIZE)
+            {
+                return false;
+            }
+
+            strcpy(command.path, body);
+
+            command.hasPayload = false;
         }
 
-        strncpy(command.path, text, pathLength);
-        command.path[pathLength] = '\0';
+        // ------------------------
+        // SET
+        // ------------------------
 
-        const char *value = separator + 1;
-        size_t valueLength = strlen(value);
-        if (valueLength >= Command::PAYLOAD_SIZE)
+        else
         {
-            m_eventEmitter.emitEvent(
-                EventType::EVENT_CMD_ERROR);
-            return;
+            size_t pathLength =
+                separator - body;
+
+            if (pathLength == 0 ||
+                pathLength >= COMMAND_PATH_SIZE)
+            {
+                return false;
+            }
+
+            strncpy(
+                command.path,
+                body,
+                pathLength);
+
+            command.path[pathLength] = '\0';
+
+            const char *payload =
+                separator + 1;
+
+            if (strlen(payload) >=
+                COMMAND_PAYLOAD_SIZE)
+            {
+                return false;
+            }
+
+            strcpy(
+                command.payload,
+                payload);
+
+            command.hasPayload = true;
         }
 
-        strncpy(command.payload, value, valueLength);
-        command.payload[valueLength] = '\0';
+        m_command = command;
+        m_hasCommand = true;
 
-        command.hasPayload = true;
-        Event event = {};
-        event.type = EventType::EVENT_CMD_RCV;
-        event.command = command;
-        m_eventEmitter.emitEvent(event);
+
+
+        return true;
+
+
     }
 
     void ProtocolHandler::send(ITransport &transport, ProtocolMessage message)
@@ -229,6 +280,15 @@ namespace node
             1);
     }
 
+    void ProtocolHandler::writeText(
+        ITransport &transport,
+        const char *text)
+    {
+        transport.write(
+            reinterpret_cast<const uint8_t *>(text),
+            strlen(text));
+    }
+
     void ProtocolHandler::sendHeartbeat(
         ITransport &transport)
     {
@@ -247,68 +307,203 @@ namespace node
         return m_eventEmitter.getEvent();
     }
 
-void ProtocolHandler::sendState(ITransport& transport, State state)
-{
-    switch (state)
+    bool ProtocolHandler::hasCommand() const
     {
+        return m_hasCommand;
+    }
+    Command ProtocolHandler::getCommand()
+    {
+        Command command = m_command;
+        m_command = {};
+        m_hasCommand = false;
+
+        return command;
+    }
+
+    void ProtocolHandler::sendState(ITransport &transport, State state)
+    {
+        switch (state)
+        {
         case State::STATE_UP:
 
             send(
                 transport,
-                ProtocolMessage::MESSAGE_UP
-            );
+                ProtocolMessage::MESSAGE_UP);
 
             break;
-
 
         case State::STATE_CFG:
 
             send(
                 transport,
-                ProtocolMessage::MESSAGE_CFG
-            );
+                ProtocolMessage::MESSAGE_CFG);
 
             break;
-
 
         case State::STATE_RUN:
 
             send(
                 transport,
-                ProtocolMessage::MESSAGE_RUN
-            );
+                ProtocolMessage::MESSAGE_RUN);
 
             break;
-
 
         case State::STATE_IDLE:
 
             send(
                 transport,
-                ProtocolMessage::MESSAGE_IDLE
-            );
+                ProtocolMessage::MESSAGE_IDLE);
 
             break;
-            
+
         case State::STATE_DISABLED:
 
             send(
                 transport,
-                ProtocolMessage::MESSAGE_DISABLED
+                ProtocolMessage::MESSAGE_DISABLED);
+
+            break;
+        }
+    }
+
+    void ProtocolHandler::sendCommand(ITransport &transport, Command command)
+    {
+        char message[256] = {};
+
+        strncpy(message, command.path, COMMAND_PATH_SIZE);
+        strncat(message, "=", 1);
+        strncat(message, command.payload, COMMAND_PAYLOAD_SIZE);
+
+        send(transport, message);
+    }
+ void ProtocolHandler::sendCommandResult( ITransport& transport, const Command& command, const CommandResult& result)
+{
+    switch (result.type)
+    {
+        case CommandResultType::ACK:
+        {
+            writeText(transport, "CMD_ACK:");
+            writeText(transport, command.path);
+            break;
+        }
+
+
+        case CommandResultType::RESPONSE:
+        {
+            writeText(
+                transport,
+                "CMD_RESPONSE:"
+            );
+
+            writeText(
+                transport,
+                command.path
+            );
+
+            writeText(transport, ":");
+
+            writeText(
+                transport,
+                result.payload
             );
 
             break;
+        }
+
+
+        case CommandResultType::ERROR:
+        {
+            writeText(
+                transport,
+                "CMD_ERROR:"
+            );
+
+            writeText(
+                transport,
+                commandErrorToString(
+                    result.error
+                )
+            );
+
+            writeText(transport, ":");
+
+            writeText(
+                transport,
+                command.path
+            );
+
+            break;
+        }
     }
+
+
+    const uint8_t newline = '\n';
+
+    transport.write(
+        &newline,
+        1
+    );
 }
 
-void ProtocolHandler::sendCommand(ITransport &transport, Command command)
+void ProtocolHandler::sendNodeEvent( ITransport& transport, const NodeEvent& event)
 {
-    char message[256] = {};
+    switch (event.type)
+    {
+        case NodeEventType::DATA:
+            writeText(
+                transport,
+                "NODE_DATA:"
+            );
+            break;
 
-    strncpy(message, command.path, Command::PATH_SIZE);
-    strncat(message, "=", 1);
-    strncat(message, command.payload, Command::PAYLOAD_SIZE);
 
-    send(transport, message);   
+        case NodeEventType::TRIGGER:
+            writeText(
+                transport,
+                "NODE_TRIGGER:"
+            );
+            break;
+
+
+        case NodeEventType::ERROR:
+            writeText(
+                transport,
+                "NODE_ERROR:"
+            );
+
+            writeText(
+                transport,
+                nodeErrorToString( event.error )
+            );
+
+            writeText(transport, ":");
+            break;
+    }
+
+
+    writeText(
+        transport,
+        event.path
+    );
+
+
+    if (event.hasPayload)
+    {
+        writeText(transport, ":");
+
+        writeText(
+            transport,
+            event.payload
+        );
+    }
+
+
+    const uint8_t newline = '\n';
+
+    transport.write(
+        &newline,
+        1
+    );
 }
 }
+

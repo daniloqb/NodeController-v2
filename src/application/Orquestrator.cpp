@@ -1,5 +1,6 @@
 #include "Orquestrator.h"
 
+
 namespace node
 {
 
@@ -25,6 +26,14 @@ namespace node
             handleEvent(event);
         }
 
+        while (m_protocol.hasCommand())
+        {
+            Command command = m_protocol.getCommand();
+
+
+            handleCommand(command);
+        }
+
         m_stateMachine.update();
 
         m_heartBeatMonitor.update();
@@ -46,6 +55,11 @@ namespace node
         {
             Event event = m_nodeController.getEvent();
             handleEvent(event);
+        }
+
+        NodeEvent nodeEvent = {};
+        if(m_nodeController.pollEvent(nodeEvent)){
+            m_protocol.sendNodeEvent(m_transportSystem, nodeEvent); 
         }
     }
 
@@ -109,4 +123,24 @@ namespace node
         }
     }
 
+    void Orquestrator::handleCommand(const Command &command)
+    {
+        State currentState = m_stateMachine.getState();
+
+        if (currentState != State::STATE_IDLE && currentState != State::STATE_RUN)
+        {
+            CommandResult result  {};
+            
+            result.type = CommandResultType::ERROR;
+            result.error = CommandError::INVALID_STATE;
+            
+            m_protocol.sendCommandResult(m_transportSystem, command, result);
+            
+            return;
+        }
+
+        CommandResult result  = m_nodeController.handleCommand(command);
+        m_protocol.sendCommandResult(m_transportSystem, command, result);
+
+    }
 }

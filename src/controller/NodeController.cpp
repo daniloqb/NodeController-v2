@@ -1,6 +1,6 @@
 #include "NodeController.h"
 #include "nodes/LedNode.h"
-#include <Arduino.h>
+
 
 namespace node
 {
@@ -16,7 +16,7 @@ namespace node
         for (size_t i = 0; i < m_nodeCount; ++i)
         {
             m_nodes[i]->begin();
-        }   
+        }
     }
 
     void node::NodeController::update()
@@ -24,7 +24,7 @@ namespace node
         for (size_t i = 0; i < m_nodeCount; ++i)
         {
             m_nodes[i]->update();
-        }           
+        }
     }
 
     void node::NodeController::handleEvent(const Event &event)
@@ -58,25 +58,61 @@ namespace node
         if (m_nodeCount < MAX_NODES)
         {
             m_nodes[m_nodeCount++] = &node;
-        }   
+        }
     }
 
-    void NodeController::handleCommand(const Command &command)
+    CommandResult NodeController::handleCommand(const Command &command)
     {
-        bool handled = false;
+        bool found = false;
+        CommandResult finalResult = {};
+
+
+
         for (size_t i = 0; i < m_nodeCount; ++i)
         {
-            if (m_nodes[i]->accepts(command))
+            INode *node = m_nodes[i];
+
+            if (!node->accepts(command))
             {
-                m_nodes[i]->handleCommand(command);
-                handled = true;
-                
+                continue;
+            }
+
+            found = true;
+
+            CommandResult result = node->handleCommand(command);
+
+            if (result.type == CommandResultType::ERROR)
+            {
+                return result;
+            }
+
+            finalResult = result;
+        }
+
+        if (!found)
+        {
+            finalResult.type = CommandResultType::ERROR;
+            finalResult.error = CommandError::NODE_NOT_FOUND;
+        }
+
+        return finalResult;
+    }
+
+    bool NodeController::pollEvent(NodeEvent &node)  {
+        if (m_nodeCount == 0)
+            return false;
+
+        for (size_t offset = 0; offset < m_nodeCount; ++offset)
+        {
+            size_t i = (m_nextPollIndex + offset) % m_nodeCount;
+            if (m_nodes[i]->pollEvent(node))
+            {
+                m_nextPollIndex = (i + 1) % m_nodeCount;
+                return true;
             }
         }
-        if (!handled)
-        {
-            // Handle unhandled command here
-        }
+
+        return false;
     }
 
 }
