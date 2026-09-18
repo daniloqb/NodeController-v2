@@ -29,6 +29,7 @@ namespace node
 
     bool hasCommand() const;
     Command getCommand();
+    void releaseCommand();
 
     void sendHeartbeat(ITransport &transport);
     void sendState(ITransport &transport, State state);
@@ -38,7 +39,7 @@ namespace node
 
   private:
     void processMessage();
-    bool parseCommand(const char *text);
+    bool parseCommand();
     void clearBuffer();
 
   private:

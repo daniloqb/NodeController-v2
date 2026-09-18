@@ -9,11 +9,9 @@ namespace node
 
     struct Command
     {
-       
-        char path[COMMAND_PATH_SIZE] = {};
-        char payload[COMMAND_PAYLOAD_SIZE] = {};
-        // char *path = nullptr;
-        // char *payload = nullptr;
+
+        char *path = nullptr;
+        char *payload = nullptr;
         bool hasPayload = false;
     };
 

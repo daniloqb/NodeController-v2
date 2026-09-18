@@ -32,6 +32,7 @@ namespace node
 
 
             handleCommand(command);
+            m_protocol.releaseCommand();
         }
 
         m_stateMachine.update();
