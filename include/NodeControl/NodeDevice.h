@@ -11,7 +11,7 @@ namespace node
 class NodeDevice
 {
 public:
-    explicit NodeDevice(ITransport& transport);
+    explicit NodeDevice(ITransport& transport, const char* deviceConfig);
 
     void begin();
     void update();

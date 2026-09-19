@@ -3,8 +3,8 @@
 namespace node
 {
 
-NodeDevice::NodeDevice(ITransport& transport)
-    : m_orchestrator(transport)
+NodeDevice::NodeDevice(ITransport& transport, const char* deviceConfig)
+    : m_orchestrator(transport, deviceConfig)
 {
 }
 

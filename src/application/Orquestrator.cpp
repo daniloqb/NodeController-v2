@@ -108,7 +108,7 @@ namespace node
             m_protocol.sendState(m_transportSystem, m_stateMachine.getState());
             break;
         case EventType::EVENT_CFG_REQUEST:
-            m_protocol.sendConfig(m_transportSystem);
+            m_protocol.sendConfig(m_transportSystem, m_deviceConfig);
             break;
 
         case EventType::EVENT_HB_REQUEST:

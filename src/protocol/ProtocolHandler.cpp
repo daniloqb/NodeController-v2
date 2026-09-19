@@ -1,7 +1,7 @@
 #include <NodeControl/ProtocolHandler.h>
-#include <NodeControl/DeviceConfig.h>
 #include <string.h>
 #include <stdlib.h>
+#include <avr/pgmspace.h>
 
 
 namespace node
@@ -516,7 +516,7 @@ namespace node
         }
     }
 
-    void ProtocolHandler::sendConfig(ITransport &transport)
+    void ProtocolHandler::sendConfig(ITransport &transport, const char* deviceConfig)
     {
         writeText(
             transport,
@@ -524,7 +524,7 @@ namespace node
 
         sendProgmem(
             transport,
-            DEVICE_CONFIG);
+            deviceConfig);
 
         writeText(
             transport,

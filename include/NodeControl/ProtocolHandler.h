@@ -40,7 +40,7 @@ namespace node
     void sendCommand(ITransport &transport, const Command& command);
     void sendCommandResult(ITransport &transport, const Command &command, const CommandResult &result);
     void sendProgmem(ITransport &transport, const char *progmemString);
-    void sendConfig(ITransport &transport);
+    void sendConfig(ITransport &transport, const char* deviceConfig);
 
   private:
     void processMessage();

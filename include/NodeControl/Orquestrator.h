@@ -14,7 +14,7 @@ namespace node
     class Orquestrator
     {
     public:
-        Orquestrator(ITransport &transport) : m_transportSystem(transport) {};
+        Orquestrator(ITransport &transport, const char* deviceConfig) : m_transportSystem(transport), m_deviceConfig(deviceConfig) {};
         void begin();
         void update();
         void handleEvent(const Event &event);
@@ -32,6 +32,8 @@ namespace node
         node::StatusMonitor m_statusMonitor;
 
     private:
+        const char* m_deviceConfig;
+
         void sendNodeStatusUpdate(ITransport &transport);
     };
 
