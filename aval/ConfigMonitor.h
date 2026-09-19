@@ -1,6 +1,6 @@
 #pragma once
-#include "core/Events.h"
-#include "core/StateMachine.h"
+#include "NodeControl/Events.h"
+#include "NodeControl/StateMachine.h"
 
 
 
@@ -17,8 +17,8 @@ namespace node
         bool hasEvent() const;
         Event getEvent();
         bool isRunning() const;
-        void startConfig();
-        void stopConfig();
+        void restartHandshake();
+        void stopHandshake();
 
     private:
 

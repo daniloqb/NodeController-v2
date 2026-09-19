@@ -1,30 +1,42 @@
 #include <Arduino.h>
-#include "application/Orquestrator.h"
-#include "communication/SerialTransport.h"
-#include "core/StateMachine.h"
+#include <NodeControl/NodeControl.h>
+#include <NodeControl/LedNode.h>
+
+namespace node
+{
+    const char DEVICE_CONFIG[] PROGMEM = R"json(
+{"nodes":{
+    "l":{
+        "name":"LedNode",
+        "properties":{
+            "s":{
+                "name":"Status",
+                "datatype":"boolean",
+                "settable":true
+            }
+        }
+    }
+}}
+)json";
+}
 
 node::SerialTransport serialTransport(Serial);
-node::Orquestrator orquestrator(serialTransport);
+node::NodeDevice device(serialTransport, node::DEVICE_CONFIG);
+node::LedNode *ledNode = new node::LedNode(13);
 
 
-const char* toString(node::State s) {
-  switch (s) {
-    case node::State::STATE_UP: return "UP";
-    case node::State::STATE_CFG: return "CFG";
-    case node::State::STATE_IDLE: return "IDLE";
-    case node::State::STATE_RUN: return "RUN";
-    case node::State::STATE_DISABLED: return "DISABLED";
-  }
-  return "UNKNOWN";
-}
+
 
 void setup() {
 
-  orquestrator.begin();
+  device.begin();
+  device.addNode(*ledNode);
+
+  Serial.println("Setup complete");
 }
 
 void loop() {
-orquestrator.update();
+device.update();
 
 
 }

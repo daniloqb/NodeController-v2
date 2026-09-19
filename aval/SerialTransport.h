@@ -1,5 +1,5 @@
 #pragma once
-#include "communication/ITransport.h"
+#include "NodeControl/ITransport.h"
 #include <HardwareSerial.h>
 
 namespace node {
@@ -11,7 +11,7 @@ namespace node {
 
         void begin() override
         {
-            m_serial.begin(115200);
+            m_serial.begin(9600);
         }
 
         void update() override

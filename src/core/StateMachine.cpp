@@ -3,7 +3,7 @@
 namespace node
 {
 
-     void StateMachine::begin()
+    void StateMachine::begin()
     {
         m_state = State::STATE_UP;
     }
@@ -13,8 +13,6 @@ namespace node
         // This function can be used to perform periodic checks or updates
         // For now, it does nothing
     }
-
-    
 
     void StateMachine::transitionTo(State newState)
     {
@@ -29,7 +27,6 @@ namespace node
         return m_state;
     }
 
-    
     void node::StateMachine::handleEvent(const Event &event)
     {
         switch (m_state)
@@ -50,18 +47,33 @@ namespace node
             if (event.type == EventType::EVENT_IDLE_RCV)
             {
                 transitionTo(State::STATE_IDLE);
-            } else {
-                 if (event.type == EventType::EVENT_DIS_RCV)
+            }
+            else
             {
-                transitionTo(State::STATE_DISABLED);
-            } 
+                if (event.type == EventType::EVENT_DIS_RCV)
+                {
+                    transitionTo(State::STATE_DISABLED);
+                }
             }
             break;
         case State::STATE_IDLE:
-        case State::STATE_DISABLED:
-            if (event.type == EventType::EVENT_RUN_RCV  )
+            if (event.type == EventType::EVENT_RUN_RCV)
             {
                 transitionTo(State::STATE_RUN);
+            }
+            else if (event.type == EventType::EVENT_DIS_RCV)
+            {
+                transitionTo(State::STATE_DISABLED);
+            }
+            break;
+        case State::STATE_DISABLED:
+            if (event.type == EventType::EVENT_RUN_RCV)
+            {
+                transitionTo(State::STATE_RUN);
+            }
+            else if (event.type == EventType::EVENT_IDLE_RCV)
+            {
+                transitionTo(State::STATE_IDLE);
             }
             break;
 
@@ -79,12 +91,12 @@ namespace node
             transitionTo(State::STATE_UP);
             return;
         }
-             if (event.type == EventType::EVENT_UP_TIMEOUT)
+        if (event.type == EventType::EVENT_UP_TIMEOUT)
         {
             transitionTo(State::STATE_UP);
             return;
         }
-             if (event.type == EventType::EVENT_CFG_TIMEOUT)
+        if (event.type == EventType::EVENT_CFG_TIMEOUT)
         {
             transitionTo(State::STATE_UP);
             return;

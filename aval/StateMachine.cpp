@@ -1,4 +1,4 @@
-#include "StateMachine.h"
+#include <NodeControl/StateMachine.h>
 
 namespace node
 {

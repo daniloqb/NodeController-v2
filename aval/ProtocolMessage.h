@@ -17,15 +17,23 @@ namespace node
         MESSAGE_UP_ACK,
         MESSAGE_CFG_ACK,
         MESSAGE_HB_ACK,
-        MESSAGE_CMD_ACK,
+
 
         // Heartbeat
         MESSAGE_HB,
 
         // Comandos
         MESSAGE_CMD,
+        MESSAGE_CMD_ACK,
+        MESSAGE_CMD_RESPONSE,
+        MESSAGE_CMD_ERROR,
+
+        MESSAGE_NODE_DATA,
+        MESSAGE_NODE_TRIGGER,
+        MESSAGE_NODE_ERROR,
+        
         MESSAGE_REBOOT,
-        MESSAGE_GET_STATE
+        MESSAGE_GET_STATE,
     };
 
     const char* protocolMessageToString(ProtocolMessage message);

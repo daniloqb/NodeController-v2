@@ -1,4 +1,4 @@
-#include "agents/HeartBeatMonitor.h"
+#include <NodeControl/HeartBeatMonitor.h>
 #include <Arduino.h>
 
 namespace node
@@ -43,6 +43,7 @@ namespace node
         switch (event.type)
         {
         case EventType::EVENT_HB_ACK:
+        case EventType::EVENT_REBOOT:
             m_waitingHeartbeat = false;
             m_lastHeartbeatTime = millis();
             break;

@@ -1,5 +1,5 @@
 #pragma once
-#include "core/Events.h"
+#include "NodeControl/Events.h"
 namespace node
 {
 
@@ -20,6 +20,6 @@ namespace node
         EventEmitter m_eventEmitter;
         unsigned long m_lastHeartbeatTime = 0;
         bool m_waitingHeartbeat = false;
-        static constexpr unsigned long HEARTBEAT_INTERVAL = 10000;
+        static constexpr unsigned long HEARTBEAT_INTERVAL = 60000;
     };
 }
