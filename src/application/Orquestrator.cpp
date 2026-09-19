@@ -58,10 +58,13 @@ namespace node
             handleEvent(event);
         }
 
-        NodeEvent nodeEvent = {};
-        if (m_nodeController.pollEvent(nodeEvent))
+        if (m_stateMachine.getState() == State::STATE_RUN || m_stateMachine.getState() == State::STATE_IDLE)
         {
-            m_protocol.sendNodeEvent(m_transportSystem, nodeEvent);
+            NodeEvent nodeEvent = {};
+            if (m_nodeController.pollEvent(nodeEvent))
+            {
+                m_protocol.sendNodeEvent(m_transportSystem, nodeEvent);
+            }
         }
 
         m_statusMonitor.update();

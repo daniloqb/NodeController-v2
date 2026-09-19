@@ -538,13 +538,13 @@ namespace node
         case NodeEventType::DATA:
             writeText(
                 transport,
-                "NODE_DATA:");
+                "DATA:");
             break;
 
         case NodeEventType::TRIGGER:
             writeText(
                 transport,
-                "NODE_TRIGGER:");
+                "TRIGGER:");
             break;
 
         case NodeEventType::ERROR:
