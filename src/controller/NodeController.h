@@ -3,6 +3,7 @@
 #include "core/Events.h"
 #include "core/Commands.h"
 #include "nodes/INode.h"
+#include "protocol/IStatusWriter.h"
 
 namespace node
 {
@@ -14,6 +15,7 @@ namespace node
         void update();
      
         CommandResult handleCommand(const Command &command);
+        void writeStatus(IStatusWriter& writer) const;
 
         void handleEvent(const Event &event);
         bool pollEvent(NodeEvent& node);

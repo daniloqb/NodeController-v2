@@ -1,6 +1,5 @@
-#include "NodeController.h"
+#include "controller/NodeController.h"
 #include "nodes/LedNode.h"
-
 
 namespace node
 {
@@ -61,44 +60,65 @@ namespace node
         }
     }
 
-    CommandResult NodeController::handleCommand(const Command &command)
+   CommandResult NodeController::handleCommand(const Command& command)
+{
+    for (size_t i = 0;
+         i < m_nodeCount;
+         ++i)
     {
-        bool found = false;
-        CommandResult finalResult = {};
+        INode* node = m_nodes[i];
 
+        // O comando pertence a este Node?
+        if (node->getId() != command.nodeId)
+        {
+            continue;
+        }
 
+        // Node encontrado.
+        // Agora ele verifica a propriedade.
+        if (command.propertyId == '\0')
+        {
+            CommandResult result{};
+            result.type = CommandResultType::ERROR;
+            result.error = CommandError::INVALID_FORMAT;
+            return result;
+        }
+        return node->handleCommand(command);
+    }
+
+    // Percorremos todos os Nodes
+    // e nenhum possuía este ID.
+    CommandResult result{};
+
+    result.type =
+        CommandResultType::ERROR;
+
+    result.error =
+        CommandError::NODE_NOT_FOUND;
+
+    return result;
+}
+
+    void NodeController::writeStatus(IStatusWriter &writer) const
+    {
+        writer.begin();
 
         for (size_t i = 0; i < m_nodeCount; ++i)
         {
             INode *node = m_nodes[i];
 
-            if (!node->accepts(command))
-            {
-                continue;
-            }
+            writer.beginNode(node->getId());
 
-            found = true;
+            node->writeStatus(writer);
 
-            CommandResult result = node->handleCommand(command);
-
-            if (result.type == CommandResultType::ERROR)
-            {
-                return result;
-            }
-
-            finalResult = result;
+            writer.endNode();
         }
 
-        if (!found)
-        {
-            finalResult.type = CommandResultType::ERROR;
-            finalResult.error = CommandError::NODE_NOT_FOUND;
-        }
-
-        return finalResult;
+        writer.end();
     }
 
-    bool NodeController::pollEvent(NodeEvent &node)  {
+    bool NodeController::pollEvent(NodeEvent &node)
+    {
         if (m_nodeCount == 0)
             return false;
 

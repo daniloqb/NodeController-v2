@@ -2,6 +2,7 @@
 
 #include "nodes/INode.h"
 #include "core/Commands.h"
+#include "protocol/IStatusWriter.h"
 
 namespace node
 {
@@ -14,15 +15,15 @@ namespace node
         void update() override;
         void reset() override;
 
-        const char* getId() const override;
-        bool accepts(const Command &command) const override;
+        char getId() const override;
 
         CommandResult handleCommand(const Command &command) override;
         bool pollEvent(NodeEvent& event) override;
+        void writeStatus(IStatusWriter& writer) const override;
 
     private:
         bool m_status;
-        uint8_t m_pin = false;
+        uint8_t m_pin = 0;
         void SetStatus(const bool status);
     };
 

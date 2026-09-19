@@ -1,7 +1,7 @@
 #include "protocol/ProtocolHandler.h"
 #include <string.h>
 #include <stdlib.h>
-#include <Arduino.h>
+#include "core/DeviceConfig.h"
 
 namespace node
 {
@@ -83,7 +83,8 @@ namespace node
 
         processMessage();
 
-        clearBuffer();
+        if (!m_hasCommand)
+            clearBuffer();
     }
 
     void node::ProtocolHandler::processMessage()
@@ -178,32 +179,62 @@ namespace node
 
     bool ProtocolHandler::parseCommand()
     {
-        // m_buffer:
-        // CMD:/led/status:true
+        // Exemplos:
+        //
+        // CMD:/l/s
+        // CMD:/l/s:1
 
         char *body = m_buffer + 4;
 
-        if (*body != '/')
+        // Esperamos pelo menos:
+        //
+        // /l/s
+        //
+        // 0123
+
+        if (body[0] != '/' ||
+            body[1] == '\0' ||
+            body[2] != '/')
         {
             return false;
         }
 
-        char *separator = strchr(body, ':');
+        m_command = {};
 
-        m_command.path = body;
+        m_command.nodeId = body[1];
+        m_command.propertyId = body[3];
 
-        if (separator != nullptr)
+        // Depois da propriedade só podem existir:
+        //
+        // '\0'
+        //
+        // ou
+        //
+        // ':' + payload
+
+        if (body[3] == '\0' || body[4] == '\0')
         {
-            // Quebra a string no próprio buffer.
-            *separator = '\0';
+            // GET
+            m_command.payload = nullptr;
+            m_command.hasPayload = false;
+        }
+        else if (body[4] == ':')
+        {
+            // SET
 
-            m_command.payload = separator + 1;
+            if (body[5] == '\0')
+            {
+                // Payload vazio.
+                // Por enquanto consideramos inválido.
+                return false;
+            }
+
+            m_command.payload = &body[5];
             m_command.hasPayload = true;
         }
         else
         {
-            m_command.payload = nullptr;
-            m_command.hasPayload = false;
+            return false;
         }
 
         m_hasCommand = true;
@@ -247,6 +278,60 @@ namespace node
         transport.write(
             reinterpret_cast<const uint8_t *>(text),
             strlen(text));
+    }
+
+    void ProtocolHandler::writeChar(ITransport &transport, char value)
+    {
+        uint8_t byte =
+            static_cast<uint8_t>(value);
+
+        transport.write(
+            &byte,
+            1);
+    }
+
+    void ProtocolHandler::writeValue(ITransport &transport, const Value &value)
+    {
+        char buffer[16];
+
+        switch (value.type)
+        {
+        case ValueType::BOOLEAN:
+        {
+            writeText(transport, value.data.booleanValue ? "1" : "0");
+            break;
+        }
+        case ValueType::INTEGER:
+        {
+            ltoa(value.data.integerValue, buffer, 10);
+            writeText(transport, buffer);
+            break;
+        }
+        case ValueType::FLOAT:
+        {
+            dtostrf(value.data.floatValue, 0, 6, buffer);
+            writeText(transport, buffer);
+            break;
+        }
+
+        case ValueType::NONE:
+        default:
+            break;
+        }
+    }
+
+    void ProtocolHandler::writeCommandPath(ITransport &transport, const Command &command)
+    {
+        writeChar(transport, '/');
+
+        writeChar(
+            transport,
+            command.nodeId);
+
+        writeChar(transport, '/');
+
+        if (command.propertyId != '\0')
+            writeChar(transport, command.propertyId);
     }
 
     void ProtocolHandler::sendHeartbeat(
@@ -330,24 +415,40 @@ namespace node
         }
     }
 
-    void ProtocolHandler::sendCommand(ITransport &transport, Command command)
+    void ProtocolHandler::sendCommand(ITransport &transport, const Command &command)
     {
-        char message[256] = {};
+        writeText(transport, "CMD:");
 
-        strncpy(message, command.path, COMMAND_PATH_SIZE);
-        strncat(message, "=", 1);
-        strncat(message, command.payload, COMMAND_PAYLOAD_SIZE);
+        writeChar(transport, '/');
+        writeChar(transport, command.nodeId);
 
-        send(transport, message);
+        writeChar(transport, '/');
+        writeChar(transport, command.propertyId);
+
+        if (command.hasPayload &&
+            command.payload != nullptr)
+        {
+            writeChar(transport, ':');
+            writeText(transport, command.payload);
+        }
+
+        writeChar(transport, '\n');
     }
+
     void ProtocolHandler::sendCommandResult(ITransport &transport, const Command &command, const CommandResult &result)
     {
         switch (result.type)
         {
         case CommandResultType::ACK:
         {
-            writeText(transport, "CMD_ACK:");
-            writeText(transport, command.path);
+            writeText(
+                transport,
+                "CMD_ACK:");
+
+            writeCommandPath(
+                transport,
+                command);
+
             break;
         }
 
@@ -357,15 +458,17 @@ namespace node
                 transport,
                 "CMD_RESPONSE:");
 
-            writeText(
+            writeCommandPath(
                 transport,
-                command.path);
+                command);
 
-            writeText(transport, ":");
-
-            writeText(
+            writeChar(
                 transport,
-                result.payload);
+                ':');
+
+            writeValue(
+                transport,
+                result.value);
 
             break;
         }
@@ -381,21 +484,50 @@ namespace node
                 commandErrorToString(
                     result.error));
 
-            writeText(transport, ":");
-
-            writeText(
+            writeChar(
                 transport,
-                command.path);
+                ':');
+
+            writeCommandPath(
+                transport,
+                command);
 
             break;
         }
         }
 
-        const uint8_t newline = '\n';
+        writeChar(
+            transport,
+            '\n');
+    }
 
-        transport.write(
-            &newline,
-            1);
+    void ProtocolHandler::sendProgmem(ITransport &transport, const char *progmemString)
+    {
+        while (true)
+        {
+            char c = pgm_read_byte(progmemString++);
+            if (c == '\0')
+            {
+                break;
+            }
+            uint8_t byte = static_cast<uint8_t>(c);
+            transport.write(&byte, 1);
+        }
+    }
+
+    void ProtocolHandler::sendConfig(ITransport &transport)
+    {
+        writeText(
+            transport,
+            "CFG:");
+
+        sendProgmem(
+            transport,
+            DEVICE_CONFIG);
+
+        writeText(
+            transport,
+            "\n");
     }
 
     void ProtocolHandler::sendNodeEvent(ITransport &transport, const NodeEvent &event)
@@ -446,4 +578,5 @@ namespace node
             &newline,
             1);
     }
+
 }

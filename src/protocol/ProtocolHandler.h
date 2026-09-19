@@ -19,7 +19,10 @@ namespace node
     void send(ITransport &transport, ProtocolMessage message);
     void send(ITransport &transport, const char *message);
 
-    void writeText(ITransport& transport, const char* text);
+    void writeText(ITransport &transport, const char *text);
+    void writeValue(ITransport &transport, const Value &value);
+    void writeChar(ITransport &transport, char value);
+    void writeCommandPath(ITransport &transport, const Command &command);
 
     void receive(uint8_t byte);
     void receiveMessage(const char *message);
@@ -33,9 +36,11 @@ namespace node
 
     void sendHeartbeat(ITransport &transport);
     void sendState(ITransport &transport, State state);
-        void sendNodeEvent(ITransport &transport, const NodeEvent& event);
-    void sendCommand(ITransport &transport, Command command);
-    void sendCommandResult(ITransport &transport, const Command& command, const CommandResult& result);
+    void sendNodeEvent(ITransport &transport, const NodeEvent &event);
+    void sendCommand(ITransport &transport, const Command& command);
+    void sendCommandResult(ITransport &transport, const Command &command, const CommandResult &result);
+    void sendProgmem(ITransport &transport, const char *progmemString);
+    void sendConfig(ITransport &transport);
 
   private:
     void processMessage();

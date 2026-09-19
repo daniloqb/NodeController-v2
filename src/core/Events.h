@@ -30,7 +30,8 @@ namespace node
         EVENT_GET_STATE,
         EVENT_CMD_ERROR,
         EVENT_CMD_PARSE_ERROR,
-        EVENT_BUFFER_OVERFLOW
+        EVENT_BUFFER_OVERFLOW,
+        EVENT_STATUS_UPDATE,
     };
 
     struct Event

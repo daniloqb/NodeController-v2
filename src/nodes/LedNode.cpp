@@ -1,5 +1,6 @@
 #include "nodes/LedNode.h"
 #include "core/Events.h"
+#include "core/Value.h"
 #include <Arduino.h>
 
 namespace node
@@ -29,67 +30,106 @@ namespace node
         SetStatus(false);
     }
 
-    bool node::LedNode::accepts(const Command &command) const
+
+   CommandResult LedNode::handleCommand(
+    const Command& command)
+{
+    CommandResult result{};
+
+    // O LedNode atualmente só possui
+    // a propriedade 's' = status
+
+    if (command.propertyId != 's')
     {
-        return strncmp(command.path, "/led/", strlen("/led/")) == 0;
-    }
+        result.type =
+            CommandResultType::ERROR;
 
-    CommandResult node::LedNode::handleCommand(const Command &command)
-    {
-
-        CommandResult result = {};
-
-
-        // Handle the "/led/status" command
-        if (strcmp(command.path, "/led/status") != 0)
-        {
-            result.type = CommandResultType::ERROR;          // Assuming CommandResult has a type field and CommandResultType::ERROR exists
-            result.error = CommandError::PROPERTY_NOT_FOUND; // Assuming CommandError::PROPERTY_NOT_FOUND exists
-            return result;
-        }
-
-
-
-        if (strcmp(command.path, "/led/status") == 0)
-        {
-            if (command.hasPayload) //SET
-            {
-                if (strcmp(command.payload, "true") == 0)
-                {
-                    SetStatus(true);
-                    result.type = CommandResultType::ACK;
-                    return result;
-                }
-                else if (strcmp(command.payload, "false") == 0)
-                {
-                    SetStatus(false);
-                    result.type = CommandResultType::ACK;
-                    return result;
-                }
-            }
-            if (!command.hasPayload) //GET
-            {
-                result.type = CommandResultType::RESPONSE;
-                strcpy(result.payload, m_status ? "true" : "false");
-                result.hasPayload = true;
-                return result;
-            }
-        }
-
-        result.type = CommandResultType::ERROR;
-        result.error = CommandError::INVALID_PAYLOAD;
+        result.error =
+            CommandError::PROPERTY_NOT_FOUND;
 
         return result;
     }
+
+
+    // -------------------------
+    // GET
+    //
+    // CMD:/l/s
+    // -------------------------
+
+    if (!command.hasPayload)
+    {
+        result.type =
+            CommandResultType::RESPONSE;
+
+        result.value =
+            makeBooleanValue(m_status);
+
+        return result;
+    }
+
+
+    // -------------------------
+    // SET TRUE
+    //
+    // CMD:/l/s:1
+    // -------------------------
+
+    if (strcmp(command.payload, "1") == 0)
+    {
+        SetStatus(true);
+
+        result.type =
+            CommandResultType::ACK;
+
+        return result;
+    }
+
+
+    // -------------------------
+    // SET FALSE
+    //
+    // CMD:/l/s:0
+    // -------------------------
+
+    if (strcmp(command.payload, "0") == 0)
+    {
+        SetStatus(false);
+
+        result.type =
+            CommandResultType::ACK;
+
+        return result;
+    }
+
+
+    // -------------------------
+    // INVALID VALUE
+    // -------------------------
+
+    result.type =
+        CommandResultType::ERROR;
+
+    result.error =
+        CommandError::INVALID_PAYLOAD;
+
+    return result;
+}
 
     bool node::LedNode::pollEvent(NodeEvent& event)
     {
         return false;
     }
 
-    const char *node::LedNode::getId() const
+    char node::LedNode::getId() const
     {
-        return "led";
+        return 'l';
+    }
+
+    void node::LedNode::writeStatus(IStatusWriter& writer) const
+    {
+        writer.writeProperty('s', makeBooleanValue(m_status)
+        );
     }
 
 }

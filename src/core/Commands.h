@@ -1,6 +1,7 @@
 #pragma once
 #include <stddef.h>
 #include <stdint.h>
+#include "core/Value.h"
 namespace node
 {
  static constexpr size_t COMMAND_PATH_SIZE = 20;
@@ -9,8 +10,10 @@ namespace node
 
     struct Command
     {
-
-        char *path = nullptr;
+  
+        
+        char nodeId = '\0';
+        char propertyId = '\0';
         char *payload = nullptr;
         bool hasPayload = false;
     };
@@ -39,8 +42,7 @@ namespace node
     {
         CommandResultType type = CommandResultType::ACK;
         CommandError error = CommandError::NONE;
-        char payload[COMMAND_PAYLOAD_SIZE] = {};
-        bool hasPayload = false;
+        Value value;
     };
 
     const char* commandErrorToString(CommandError error);

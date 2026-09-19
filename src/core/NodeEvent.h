@@ -9,6 +9,7 @@ namespace node
     static constexpr size_t NODE_EVENT_PATH_SIZE = 20;
     static constexpr size_t NODE_EVENT_PAYLOAD_SIZE = 20;
 
+
     enum class NodeEventType : uint8_t
     {
         DATA,
