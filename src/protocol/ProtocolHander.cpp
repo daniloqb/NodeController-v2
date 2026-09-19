@@ -1,7 +1,8 @@
-#include "protocol/ProtocolHandler.h"
+#include <NodeControl/ProtocolHandler.h>
+#include <NodeControl/DeviceConfig.h>
 #include <string.h>
 #include <stdlib.h>
-#include "core/DeviceConfig.h"
+
 
 namespace node
 {

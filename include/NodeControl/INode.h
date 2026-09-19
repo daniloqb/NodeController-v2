@@ -1,7 +1,7 @@
 #pragma once
-#include "core/NodeEvent.h"
-#include "core/Commands.h"
-#include "protocol/IStatusWriter.h"
+#include "NodeControl/NodeEvent.h"
+#include "NodeControl/Commands.h"
+#include "NodeControl/IStatusWriter.h"
 
 namespace node
 {

@@ -1,6 +1,6 @@
 #pragma once
-#include "core/Events.h"
-#include "core/StateMachine.h"
+#include "NodeControl/Events.h"
+#include "NodeControl/StateMachine.h"
 
 
 

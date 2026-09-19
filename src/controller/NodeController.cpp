@@ -1,5 +1,5 @@
-#include "controller/NodeController.h"
-#include "nodes/LedNode.h"
+#include <NodeControl/NodeController.h>
+
 
 namespace node
 {
@@ -9,9 +9,7 @@ namespace node
 
         // Initialize all nodes here if needed
 
-        LedNode *ledNode = new LedNode(13);
-        addNode(*ledNode);
-
+  
         for (size_t i = 0; i < m_nodeCount; ++i)
         {
             m_nodes[i]->begin();

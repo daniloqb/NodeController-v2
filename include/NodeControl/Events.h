@@ -1,7 +1,7 @@
 #pragma once
 #include <stdint.h>
 #include <stddef.h>
-#include "core/Commands.h"
+#include "NodeControl/Commands.h"
 
 namespace node
 {

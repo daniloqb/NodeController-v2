@@ -1,4 +1,4 @@
-#include "agents/HeartBeatMonitor.h"
+#include <NodeControl/HeartBeatMonitor.h>
 #include <Arduino.h>
 
 namespace node

@@ -1,4 +1,4 @@
-#include "agents/StatusMonitor.h"
+#include <NodeControl/StatusMonitor.h>
 #include <Arduino.h>
 
 namespace node

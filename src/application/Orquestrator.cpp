@@ -1,4 +1,4 @@
-#include "Orquestrator.h"
+#include <NodeControl/Orquestrator.h>
 
 namespace node
 {
@@ -166,5 +166,10 @@ namespace node
     {
         JSONStatusWriter writer(transport);
         m_nodeController.writeStatus(writer);
+    }
+
+    void Orquestrator::addNode(INode& node)
+    {
+        m_nodeController.addNode(node);
     }
 }

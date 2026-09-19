@@ -1,11 +1,11 @@
 #pragma once
-#include "communication/ITransport.h"
-#include "core/Events.h"
-#include "core/NodeEvent.h"
-#include "core/StateMachine.h"
-#include "core/Commands.h"
+#include "NodeControl/ITransport.h"
+#include "NodeControl/Events.h"
+#include "NodeControl/NodeEvent.h"
+#include "NodeControl/StateMachine.h"
+#include "NodeControl/Commands.h"
 
-#include "protocol/ProtocolMessage.h"
+#include "NodeControl/ProtocolMessage.h"
 
 namespace node
 {

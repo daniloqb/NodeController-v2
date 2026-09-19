@@ -1,4 +1,4 @@
-#include "core/NodeEvent.h"
+#include <NodeControl/NodeEvent.h>
 
 namespace node
 {

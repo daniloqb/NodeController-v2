@@ -1,4 +1,4 @@
-#include "core/Commands.h"
+#include <NodeControl/Commands.h>
 
 namespace node
 {

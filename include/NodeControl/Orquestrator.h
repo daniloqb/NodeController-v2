@@ -1,13 +1,13 @@
 #pragma once
-#include "core/StateMachine.h"
-#include "core/Events.h"
-#include "agents/HeartBeatMonitor.h"
-#include "agents/ConfigMonitor.h"
-#include "protocol/ProtocolHandler.h"
-#include "protocol/JSONStatusWriter.h"
-#include "communication/ITransport.h"
-#include "controller/NodeController.h"
-#include "agents/StatusMonitor.h"
+#include "NodeControl/StateMachine.h"
+#include "NodeControl/Events.h"
+#include "NodeControl/HeartBeatMonitor.h"
+#include "NodeControl/ConfigMonitor.h"
+#include "NodeControl/ProtocolHandler.h"
+#include "NodeControl/JSONStatusWriter.h"
+#include "NodeControl/ITransport.h"
+#include "NodeControl/NodeController.h"
+#include "NodeControl/StatusMonitor.h"
 
 namespace node
 {
@@ -20,6 +20,7 @@ namespace node
         void handleEvent(const Event &event);
         void handleCommand(const Command &command);
         State getState() const { return m_stateMachine.getState(); }
+        void addNode(INode& node);
 
     private:
         node::StateMachine m_stateMachine;

@@ -1,6 +1,6 @@
-#include "nodes/LedNode.h"
-#include "core/Events.h"
-#include "core/Value.h"
+#include <NodeControl/LedNode.h>
+#include <NodeControl/Events.h>
+#include <NodeControl/Value.h>
 #include <Arduino.h>
 
 namespace node

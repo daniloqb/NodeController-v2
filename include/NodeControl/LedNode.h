@@ -1,8 +1,8 @@
 #pragma once
 
-#include "nodes/INode.h"
-#include "core/Commands.h"
-#include "protocol/IStatusWriter.h"
+#include "NodeControl/INode.h"
+#include "NodeControl/Commands.h"
+#include "NodeControl/IStatusWriter.h"
 
 namespace node
 {

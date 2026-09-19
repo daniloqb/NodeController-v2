@@ -1,5 +1,5 @@
 #pragma once
-#include "communication/ITransport.h"
+#include "NodeControl/ITransport.h"
 #include <HardwareSerial.h>
 
 namespace node {

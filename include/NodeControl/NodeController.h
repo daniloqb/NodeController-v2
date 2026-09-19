@@ -1,9 +1,9 @@
 #pragma once
 
-#include "core/Events.h"
-#include "core/Commands.h"
-#include "nodes/INode.h"
-#include "protocol/IStatusWriter.h"
+#include "NodeControl/Events.h"
+#include "NodeControl/Commands.h"
+#include "NodeControl/INode.h"
+#include "NodeControl/IStatusWriter.h"
 
 namespace node
 {

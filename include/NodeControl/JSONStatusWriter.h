@@ -1,7 +1,7 @@
 #pragma once
-#include "communication/ITransport.h"
-#include "protocol/IStatusWriter.h"
-#include "core/Value.h"
+#include "NodeControl/ITransport.h"
+#include "NodeControl/IStatusWriter.h"
+#include "NodeControl/Value.h"
 
 namespace node
 {

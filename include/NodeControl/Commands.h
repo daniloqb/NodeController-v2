@@ -1,7 +1,7 @@
 #pragma once
 #include <stddef.h>
 #include <stdint.h>
-#include "core/Value.h"
+#include "NodeControl/Value.h"
 namespace node
 {
  static constexpr size_t COMMAND_PATH_SIZE = 20;

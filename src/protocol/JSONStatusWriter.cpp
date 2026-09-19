@@ -1,4 +1,4 @@
-#include "protocol/JSONStatusWriter.h"
+#include <NodeControl/JSONStatusWriter.h>
 
 #include <Arduino.h>
 

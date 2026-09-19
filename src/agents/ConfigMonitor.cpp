@@ -1,4 +1,4 @@
-#include "agents/ConfigMonitor.h"
+#include <NodeControl/ConfigMonitor.h>
 #include <Arduino.h>
 
 namespace node

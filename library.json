@@ -1,0 +1,16 @@
+{
+    "name": "NodeControl",
+    "version": "0.2.0",
+    "description": "Event-driven framework for embedded node devices",
+    "keywords": [
+        "arduino",
+        "iot",
+        "node",
+        "protocol",
+        "embedded"
+    ],
+    "frameworks": [
+        "arduino"
+    ],
+    "platforms": "*"
+}

@@ -1,5 +1,5 @@
 #pragma once
-#include "core/Events.h"
+#include "NodeControl/Events.h"
 
 namespace node
 {

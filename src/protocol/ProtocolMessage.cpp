@@ -1,4 +1,4 @@
-#include "protocol/ProtocolMessage.h"
+#include <NodeControl/ProtocolMessage.h>
 #include <string.h>
 
 namespace node
@@ -7,52 +7,26 @@ namespace node
     {
         switch (message)
         {
-            case ProtocolMessage::MESSAGE_UP:
-                return "UP";
-
-            case ProtocolMessage::MESSAGE_CFG:
-                return "CFG";
-
-            case ProtocolMessage::MESSAGE_RUN:
-                return "RUN";
-
-            case ProtocolMessage::MESSAGE_IDLE:
-                return "IDLE";
-
-            case ProtocolMessage::MESSAGE_UP_ACK:
-                return "UP_ACK";
-
-            case ProtocolMessage::MESSAGE_CFG_ACK:
-                return "CFG_ACK";
-
-            case ProtocolMessage::MESSAGE_HB_ACK:
-                return "HB_ACK";
-
-            case ProtocolMessage::MESSAGE_CMD_ACK:
-                return "CMD_ACK";
-
-            case ProtocolMessage::MESSAGE_HB:
-                return "HB";
-
-            case ProtocolMessage::MESSAGE_CMD:
-                return "CMD";
-
-            case ProtocolMessage::MESSAGE_CMD_ERROR:
-                return "CMD_ERROR";
-
-            case ProtocolMessage::MESSAGE_REBOOT:
-                return "REBOOT";
-
-            case ProtocolMessage::MESSAGE_GET_STATE:
-                return "GET_STATE";
-                
-            case ProtocolMessage::MESSAGE_DISABLED:
-                return "DIS";
-
-
-            case ProtocolMessage::MESSAGE_UNKNOWN:
-            default:
-                return "";
+        case ProtocolMessage::MESSAGE_UP: return "UP";
+        case ProtocolMessage::MESSAGE_CFG: return "CFG";
+        case ProtocolMessage::MESSAGE_RUN: return "RUN";
+        case ProtocolMessage::MESSAGE_IDLE: return "IDLE";
+        case ProtocolMessage::MESSAGE_DISABLED: return "DIS";
+        case ProtocolMessage::MESSAGE_UP_ACK: return "UP_ACK";
+        case ProtocolMessage::MESSAGE_CFG_ACK: return "CFG_ACK";
+        case ProtocolMessage::MESSAGE_HB_ACK: return "HB_ACK";
+        case ProtocolMessage::MESSAGE_HB: return "HB";
+        case ProtocolMessage::MESSAGE_CMD: return "CMD";
+        case ProtocolMessage::MESSAGE_CMD_ACK: return "CMD_ACK";
+        case ProtocolMessage::MESSAGE_CMD_RESPONSE: return "CMD_RESPONSE";
+        case ProtocolMessage::MESSAGE_CMD_ERROR: return "CMD_ERROR";
+        case ProtocolMessage::MESSAGE_NODE_DATA: return "NODE_DATA";
+        case ProtocolMessage::MESSAGE_NODE_TRIGGER: return "NODE_TRIGGER";
+        case ProtocolMessage::MESSAGE_NODE_ERROR: return "NODE_ERROR";
+        case ProtocolMessage::MESSAGE_REBOOT: return "REBOOT";
+        case ProtocolMessage::MESSAGE_GET_STATE: return "GET_STATE";
+        case ProtocolMessage::MESSAGE_UNKNOWN:
+        default: return "";
         }
     }
 

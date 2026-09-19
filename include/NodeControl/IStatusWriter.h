@@ -1,6 +1,6 @@
 #pragma once
 
-#include "core/Value.h"
+#include "NodeControl/Value.h"
 
 namespace node
 {
