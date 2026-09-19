@@ -5,6 +5,10 @@ namespace node
 
     void Orquestrator::begin()
     {
+
+        m_stateMachine.setStartupMode(m_startupMode);
+        m_configMonitor.setStartupMode(m_startupMode);
+
         m_transportSystem.begin();
         m_protocol.begin();
         m_stateMachine.begin();
@@ -13,6 +17,14 @@ namespace node
         m_statusMonitor.begin();
         m_nodeController.begin();
 
+        if (m_startupMode == StartupMode::MANAGED)
+        {
+            m_heartBeatMonitor.enableHeartbeat();
+        }
+        else
+        {
+            m_heartBeatMonitor.disableHeartbeat();
+        }
     }
 
     void Orquestrator::update()
@@ -130,12 +142,12 @@ namespace node
 
         case EventType::EVENT_STATUS_UPDATE:
             // Handle status update event
-            if(m_stateMachine.getState() == State::STATE_RUN)
+            if (m_stateMachine.getState() == State::STATE_RUN)
             {
                 // Handle status update when in RUN state
-             sendNodeStatusUpdate(m_transportSystem);
+                sendNodeStatusUpdate(m_transportSystem);
             }
-            break;  
+            break;
 
         case EventType::EVENT_CMD_ERROR:
             // m_nodeController.handleEvent(event);
@@ -165,13 +177,13 @@ namespace node
         CommandResult result = m_nodeController.handleCommand(command);
         m_protocol.sendCommandResult(m_transportSystem, command, result);
     }
-    void Orquestrator::sendNodeStatusUpdate(ITransport& transport   )
+    void Orquestrator::sendNodeStatusUpdate(ITransport &transport)
     {
         JSONStatusWriter writer(transport);
         m_nodeController.writeStatus(writer);
     }
 
-    void Orquestrator::addNode(INode& node)
+    void Orquestrator::addNode(INode &node)
     {
         m_nodeController.addNode(node);
     }

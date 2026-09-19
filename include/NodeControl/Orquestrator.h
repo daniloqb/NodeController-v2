@@ -8,13 +8,14 @@
 #include "NodeControl/ITransport.h"
 #include "NodeControl/NodeController.h"
 #include "NodeControl/StatusMonitor.h"
+#include "NodeControl/StartupMode.h"
 
 namespace node
 {
     class Orquestrator
     {
     public:
-        Orquestrator(ITransport &transport, const char* deviceConfig) : m_transportSystem(transport), m_deviceConfig(deviceConfig) {};
+        Orquestrator(ITransport &transport, const char* deviceConfig, StartupMode startupMode = StartupMode::MANAGED) : m_transportSystem(transport), m_deviceConfig(deviceConfig), m_startupMode(startupMode) {};
         void begin();
         void update();
         void handleEvent(const Event &event);
@@ -33,6 +34,7 @@ namespace node
 
     private:
         const char* m_deviceConfig;
+        StartupMode m_startupMode = StartupMode::MANAGED;
 
         void sendNodeStatusUpdate(ITransport &transport);
     };

@@ -21,10 +21,10 @@ namespace node
         bool pollEvent(NodeEvent& event) override;
         void writeStatus(IStatusWriter& writer) const override;
 
-                void SetStatus(const bool status);
+        void SetStatus(const bool status);
 
     private:
-        bool m_status;
+        bool m_status = false;
         uint8_t m_pin = 0;
 
     };

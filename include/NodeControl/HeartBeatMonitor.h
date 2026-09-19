@@ -12,11 +12,14 @@ namespace node
         void handleEvent(const Event &event);
         bool hasEvent() const;
         Event getEvent();
+        bool disableHeartbeat();
+        bool enableHeartbeat();
 
     private:
 
 
     private:
+         bool m_run = true;
         EventEmitter m_eventEmitter;
         unsigned long m_lastHeartbeatTime = 0;
         bool m_waitingHeartbeat = false;

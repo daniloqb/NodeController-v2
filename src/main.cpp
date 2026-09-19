@@ -21,7 +21,7 @@ namespace node
 }
 
 node::SerialTransport serialTransport(Serial);
-node::NodeDevice device(serialTransport, node::DEVICE_CONFIG);
+node::NodeDevice device(serialTransport, node::DEVICE_CONFIG, node::StartupMode::STANDALONE);
 node::LedNode *ledNode = new node::LedNode(13);
 
 

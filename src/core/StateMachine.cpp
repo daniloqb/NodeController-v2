@@ -2,10 +2,43 @@
 
 namespace node
 {
+    StateMachine::StateMachine(StartupMode startupMode) : m_startupMode(startupMode)
+    {
+    }
 
     void StateMachine::begin()
     {
-        m_state = State::STATE_UP;
+
+        switch (m_startupMode)
+        {
+        case StartupMode::MANAGED:
+            transitionTo(State::STATE_UP);
+            break;
+
+        case StartupMode::STANDALONE:
+            transitionTo(State::STATE_RUN);
+            break;
+        default:
+            transitionTo(State::STATE_UP);
+            break;
+        }
+    }
+
+    void StateMachine::reset()
+    {
+        switch (m_startupMode)
+        {
+        case StartupMode::MANAGED:
+            transitionTo(State::STATE_UP);
+            break;
+
+        case StartupMode::STANDALONE:
+            transitionTo(State::STATE_RUN);
+            break;
+        default:
+            transitionTo(State::STATE_UP);
+            break;
+        }
     }
 
     void StateMachine::update()
@@ -83,23 +116,27 @@ namespace node
 
         if (event.type == EventType::EVENT_REBOOT)
         {
-            transitionTo(State::STATE_UP);
+            reset();
             return;
         }
         if (event.type == EventType::EVENT_HB_TIMEOUT)
         {
-            transitionTo(State::STATE_UP);
+            reset();
             return;
         }
         if (event.type == EventType::EVENT_UP_TIMEOUT)
         {
-            transitionTo(State::STATE_UP);
+            reset();
             return;
         }
         if (event.type == EventType::EVENT_CFG_TIMEOUT)
         {
-            transitionTo(State::STATE_UP);
+            reset();
             return;
         }
+    }
+    void StateMachine::setStartupMode(StartupMode startupMode)
+    {
+        m_startupMode = startupMode;
     }
 }

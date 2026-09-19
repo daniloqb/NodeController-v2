@@ -10,3 +10,4 @@
 #include "NodeControl/Commands.h"
 #include "NodeControl/INode.h"
 #include "NodeControl/IStatusWriter.h"
+#include "NodeControl/StartupMode.h"

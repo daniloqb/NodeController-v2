@@ -15,6 +15,9 @@ namespace node
 
     void HeartBeatMonitor::update()
     {
+        if (!m_run)
+            return;
+            
         unsigned long currentTime = millis();
 
         if (currentTime - m_lastHeartbeatTime < HEARTBEAT_INTERVAL)
@@ -60,5 +63,16 @@ namespace node
     Event HeartBeatMonitor::getEvent()
     {
         return m_eventEmitter.getEvent();
+    }
+    bool HeartBeatMonitor::disableHeartbeat()
+    {
+        m_run = false;
+        return true;
+    }
+
+    bool HeartBeatMonitor::enableHeartbeat()
+    {
+        m_run = true;
+        return true;
     }
 }

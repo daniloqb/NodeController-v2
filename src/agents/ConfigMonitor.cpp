@@ -3,6 +3,9 @@
 
 namespace node
 {
+    ConfigMonitor::ConfigMonitor(StartupMode startupMode) : m_startupMode(startupMode)
+    {
+    }
 
     void ConfigMonitor::begin()
     {
@@ -10,7 +13,7 @@ namespace node
         m_waitingConfig = false;
         m_eventEmitter = EventEmitter();
         m_state = State::STATE_UP;
-        m_run = true;
+        m_run = (m_startupMode == StartupMode::MANAGED);
     }
 
     bool ConfigMonitor::isRunning() const
@@ -20,11 +23,15 @@ namespace node
 
     void ConfigMonitor::restartHandshake()
     {
-        m_run = true;
+        if (m_startupMode == StartupMode::MANAGED)
+        {
 
-        m_lastConfigTime = millis();
-        m_waitingConfig = false;
-        m_state = State::STATE_UP;
+            m_run = true;
+
+            m_lastConfigTime = millis();
+            m_waitingConfig = false;
+            m_state = State::STATE_UP;
+        }
     }
 
     void ConfigMonitor::stopHandshake()
@@ -123,6 +130,11 @@ namespace node
     Event ConfigMonitor::getEvent()
     {
         return m_eventEmitter.getEvent();
+    }
+
+    void ConfigMonitor::setStartupMode(StartupMode startupMode)
+    {
+        m_startupMode = startupMode;
     }
 
 }
